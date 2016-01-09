@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">Assistant_Android</string>
+    <string name="app_name">Assistant</string>
     <string name="action_settings">Settings</string>
+    <string name="account">校园网账号</string>
+    <string name="password">密码</string>
+    <string name="action_sign_in">登录</string>
 </resources>
