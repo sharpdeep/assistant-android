@@ -1,4 +1,4 @@
-package com.sharpdeep.assistant_android.model;
+package com.sharpdeep.assistant_android.model.dbModel;
 
 import android.content.Context;
 

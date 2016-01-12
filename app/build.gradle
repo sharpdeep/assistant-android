@@ -32,4 +32,13 @@ dependencies {
     compile 'com.github.tianzhijiexian:logger:1.1.3'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.github.satyan:sugar:1.4'
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2' // retrofit
+    compile 'io.reactivex:rxandroid:1.1.0'
+    // Because RxAndroid releases are few and far between, it is recommended you also
+    // explicitly depend on RxJava's latest version for bug fixes and new features.
+    compile 'io.reactivex:rxjava:1.1.0'
+    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2' // rxjava extension with retrofit
+    compile 'com.google.code.gson:gson:2.5' // gson
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2' // gson convertor with retrofit
+    compile 'com.squareup.okhttp:logging-interceptor:2.7.0' // filter request and response log with okHttpClient
 }

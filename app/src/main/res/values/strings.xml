@@ -4,4 +4,9 @@
     <string name="account">校园网账号</string>
     <string name="password">密码</string>
     <string name="action_sign_in">登录</string>
+    <string name="request_username">请输入校园网账号</string>
+    <string name="request_password">请输入密码</string>
+    <string name="API_version">v1</string>
+
+    <string name="base_url">http://10.21.30.125:5000</string>
 </resources>
