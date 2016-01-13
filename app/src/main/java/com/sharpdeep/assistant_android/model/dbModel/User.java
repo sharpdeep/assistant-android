@@ -12,6 +12,8 @@ public class User extends SugarRecord{
     @Unique
     private String username;
     private String password;
+    private String identify;
+    private String token;
 
     public User(){
 
@@ -36,5 +38,21 @@ public class User extends SugarRecord{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getIdentify() {
+        return identify;
+    }
+
+    public void setIdentify(String identify) {
+        this.identify = identify;
     }
 }

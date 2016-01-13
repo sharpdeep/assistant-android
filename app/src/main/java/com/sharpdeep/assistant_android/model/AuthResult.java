@@ -1,15 +1,19 @@
 package com.sharpdeep.assistant_android.model;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by bear on 16-1-10.
  */
 public class AuthResult {
+    @SerializedName("status")
     @Expose
     private String status;
+    @SerializedName("msg")
     @Expose
     private String msg;
+    @SerializedName("data")
     @Expose
     private Data data;
 
@@ -51,8 +55,10 @@ public class AuthResult {
     }
 
     class Data {
+        @SerializedName("identify")
         @Expose
         private String identify;
+        @SerializedName("token")
         @Expose
         private String token;
     }

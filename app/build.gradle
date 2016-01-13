@@ -41,4 +41,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.5' // gson
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2' // gson convertor with retrofit
     compile 'com.squareup.okhttp:logging-interceptor:2.7.0' // filter request and response log with okHttpClient
+    compile 'com.github.qiujuer:genius:2.4.0'
+    compile 'com.pnikosis:materialish-progress:1.7' //materialish-progress
 }

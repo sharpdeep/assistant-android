@@ -1,10 +1,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:gravity="center_horizontal"
-    android:orientation="vertical" android:paddingBottom="@dimen/activity_vertical_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:genius="http://schemas.android.com/apk/res-auto"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin" tools:context=".activity.LoginActivity">
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".activity.LoginActivity">
 
     <ScrollView android:id="@+id/login_form" android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -78,16 +83,32 @@
                         android:textColorHint="@color/grey_0" />
                 </android.support.design.widget.TextInputLayout>
 
-                <Button
+                <!--<Button-->
+                    <!--android:id="@+id/sign_in_button"-->
+                    <!--style="?android:textAppearanceSmall"-->
+
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textColor="@color/grey_0"-->
+                    <!--android:layout_marginTop="2dp"-->
+                    <!--android:background="@drawable/login_btn_normal"-->
+                    <!--android:text="@string/action_sign_in" />-->
+
+                <net.qiujuer.genius.widget.GeniusButton
                     android:id="@+id/sign_in_button"
                     style="?android:textAppearanceSmall"
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/grey_0"
                     android:layout_marginTop="2dp"
-                    android:background="@drawable/login_btn_normal"
-                    android:text="@string/action_sign_in" />
+                    android:text="@string/action_sign_in"
+                    genius:g_theme="@array/ClassicBlue"
+                    genius:g_cornerRadius="10dp"
+                    genius:g_delayClick="true"
+                    genius:g_touchEffect="ripple"
+                    genius:g_touchEffectColor="@color/material_blue_100"
+                    genius:g_blockButtonEffectHeight="0dp"
+                    />
             </LinearLayout>
         </LinearLayout>
 
