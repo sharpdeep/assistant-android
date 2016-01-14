@@ -5,6 +5,10 @@ import android.content.Context;
 import com.orm.SugarRecord;
 import com.orm.dsl.Unique;
 
+import java.sql.Time;
+import java.util.Date;
+import java.util.Timer;
+
 /**
  * Created by bear on 16-1-9.
  */
@@ -55,4 +59,5 @@ public class User extends SugarRecord{
     public void setIdentify(String identify) {
         this.identify = identify;
     }
+
 }

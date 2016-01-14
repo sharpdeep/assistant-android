@@ -11,22 +11,22 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
+import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.model.AuthResult;
+import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
 import com.sharpdeep.assistant_android.model.dbModel.User;
+import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
 
 import net.qiujuer.genius.Genius;
-import com.pnikosis.*;
-import com.squareup.okhttp.internal.Util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
@@ -54,22 +54,49 @@ public class LoginActivity extends AppCompatActivity {
     Toolbar mToolBar;
     @Bind(R.id.progress_login)
     View mProgress;
+    Boolean isAuth = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        init();
+        ButterKnife.bind(this); //butterknife init
+        setSupportActionBar(mToolBar);
         Genius.initialize(getApplication());
+
+        getAuthTimeObservable().subscribe(new Action1<Long>() {
+            @Override
+            public void call(Long aLong) {
+                long now = new Date().getTime()/1000;
+                if (now - aLong <= Constant.EXPRIED){//有效
+                    startActivityAndFinsh(MainActivity.class);
+                }else{
+                    init();
+                }
+            }
+        });
+        //判断网络连接情况(todo)
     }
 
     private void init(){
-        ButterKnife.bind(this); //butterknife init
-        setSupportActionBar(mToolBar);
         L.init(); //logger init
-
         initAutoComplete();
+    }
 
+    private Observable<Long> getAuthTimeObservable(){
+        // TODO: 16-1-13
+        long now = new Date().getTime()/1000;
+        return Observable.create(new Observable.OnSubscribe<Long>() {
+            @Override
+            public void call(Subscriber<? super Long> subscriber) {
+                List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
+                if(infoList.size() > 0){
+                    subscriber.onNext(infoList.get(0).getAuthTime());
+                }else if(infoList.size() == 0){
+                    subscriber.onNext(0l);
+                }
+            }
+        });
     }
 
     @OnClick(R.id.sign_in_button)
@@ -113,31 +140,43 @@ public class LoginActivity extends AppCompatActivity {
                             L.d(authResult.getStatus() + "-->" + authResult.getMsg());
                             L.d(authResult.getIdentify() + " token is:" + authResult.getToken());
                             if (authResult.isSuccess()) { //成功了更新或者保存密码
-                                HashMap<String, String> userMap = new HashMap<String, String>();
-                                userMap.put("username", username);
-                                userMap.put("password", password);
-                                Observable.just(userMap)
-                                        .observeOn(Schedulers.io())
-                                        .subscribe(new Action1<HashMap<String, String>>() {
-                                                       @Override
-                                                       public void call(HashMap<String, String> map) {
-                                                           int len = User.find(User.class, "username = ?", username).size();
-                                                           if (len == 0) {//不存在
-                                                               User user = new User(map.get("username"), map.get("password"));
-                                                               user.setIdentify(authResult.getIdentify());
-                                                               user.setToken(authResult.getToken());
-                                                               user.save();
-                                                           } else if (len > 0) {//已存在，更新
-                                                               User user = User.find(User.class, "username = ?", map.get("username")).get(0);
-                                                               user.setPassword(map.get("password"));
-                                                               user.setIdentify(authResult.getIdentify());
-                                                               user.setToken(authResult.getToken());
-                                                               user.save();
-                                                           }
-                                                       }
-                                                   });
+                                L.d("成功登陆");
+                                L.d("开始缓存数据...");
+                                //两次数据库操作可以转移到MainActivity后台执行(todo)
+                                //save user'data
+                                int len = User.find(User.class, "username = ?", username).size();
+                                User user = null;
+                                if (len == 0) {//不存在
+                                    L.d("数据库中没有该用户");
+                                    user = new User(username, password);
+                                    user.setIdentify(authResult.getIdentify());
+                                    user.setToken(authResult.getToken());
+                                    user.save();
+                                } else if (len > 0) {//已存在，更新
+                                    L.d("更新用户");
+                                    user = User.find(User.class, "username = ?", username).get(0);
+                                    user.setPassword(password);
+                                    user.setIdentify(authResult.getIdentify());
+                                    user.setToken(authResult.getToken());
+                                    user.save();
+                                }
+                                //set current user
+                                List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
+                                AppInfo info;
+                                if(infoList.size() == 0){//之前没有
+                                    info = new AppInfo();
+                                    info.setCurrentUser(user);
+                                    info.setAuthTime(new Date().getTime()/1000);
+                                    info.save();
+                                }else if(infoList.size() > 0){
+                                    info = infoList.get(0);
+                                    info.setCurrentUser(user);
+                                    info.setAuthTime(new Date().getTime()/1000);
+                                    info.save();
+                                }
+                                startActivityAndFinsh(MainActivity.class);
                             }else{//登陆失败
-                                Toast.makeText(LoginActivity.this,authResult.getMsg(),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, authResult.getMsg(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -217,5 +256,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Genius.dispose();
+    }
+
+    private void startActivityAndFinsh(Class to){
+        AndroidUtil.startActivity(this,to);
+        this.finish();
     }
 }

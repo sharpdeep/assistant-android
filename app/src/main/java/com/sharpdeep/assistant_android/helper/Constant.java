@@ -5,4 +5,5 @@ package com.sharpdeep.assistant_android.helper;
  */
 public class Constant {
     public static final String API_VERSION = "/api";
+    public static final long EXPRIED = 7*24*3600;//token有效期
 }

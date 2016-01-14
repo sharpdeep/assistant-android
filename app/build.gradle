@@ -43,4 +43,5 @@ dependencies {
     compile 'com.squareup.okhttp:logging-interceptor:2.7.0' // filter request and response log with okHttpClient
     compile 'com.github.qiujuer:genius:2.4.0'
     compile 'com.pnikosis:materialish-progress:1.7' //materialish-progress
+    compile 'it.neokree:MaterialTabs:0.11'
 }
