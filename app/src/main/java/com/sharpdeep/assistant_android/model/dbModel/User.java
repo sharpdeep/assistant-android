@@ -16,8 +16,8 @@ public class User extends SugarRecord{
     @Unique
     private String username;
     private String password;
-    private String identify;
-    private String token;
+    private String identify = "";
+    private String token = "";
 
     public User(){
 

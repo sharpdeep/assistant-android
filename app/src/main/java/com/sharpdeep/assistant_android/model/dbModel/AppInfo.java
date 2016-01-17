@@ -1,6 +1,7 @@
 package com.sharpdeep.assistant_android.model.dbModel;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 /**
  * Created by bear on 16-1-13.
@@ -13,6 +14,7 @@ public class AppInfo extends SugarRecord {
 
     public AppInfo() {
     }
+
 
     public AppInfo(User currentUser, String currentYear, int currentSemester) {
         this.currentUser = currentUser;

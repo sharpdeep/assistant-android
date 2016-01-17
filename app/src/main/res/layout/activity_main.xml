@@ -1,41 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<android.support.design.widget.CoordinatorLayout-->
-    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-    <!--android:orientation="vertical" android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent" android:fitsSystemWindows="true">-->
-
-    <!--<it.neokree.materialtabs.MaterialTabHost-->
-        <!--android:id="@+id/tabHost"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="48dp"-->
-        <!--android:layout_below="@+id/toolbar"-->
-        <!--app:primaryColor="#009688"-->
-        <!--app:accentColor="#ffc400" />-->
-
-    <!--<android.support.v4.view.ViewPager-->
-        <!--android:id="@+id/pager"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_below="@+id/tabHost" />-->
-
-    <!--<android.support.design.widget.AppBarLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content">-->
-        <!--<android.support.v7.widget.Toolbar-->
-            <!--android:id="@+id/toolbar_main"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content">-->
-        <!--</android.support.v7.widget.Toolbar>-->
-    <!--</android.support.design.widget.AppBarLayout>-->
-
-
-<!--</android.support.design.widget.CoordinatorLayout>-->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activity.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -49,19 +17,6 @@
             />
     </android.support.design.widget.AppBarLayout>
 
+    <include layout="@layout/content_syllabus"/>
 
-    <it.neokree.materialtabs.MaterialTabHost
-        android:id="@+id/tabHost"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_below="@+id/appBarLayout"
-        app:primaryColor="@color/colorPrimary"
-        app:accentColor="#fff" />
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/tabHost" />
-
-</RelativeLayout>
+</LinearLayout>

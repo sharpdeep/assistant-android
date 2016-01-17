@@ -12,10 +12,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Adapter;
+import android.widget.GridLayout;
+import android.widget.LinearLayout;
 
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
+import com.sharpdeep.assistant_android.view.SyncHorizontalScrollView;
+import com.sharpdeep.assistant_android.view.SyncScrollView;
 
 import java.util.List;
 
@@ -33,14 +37,21 @@ import rx.schedulers.Schedulers;
 /**
  * Created by bear on 16-1-13.
  */
-public class MainActivity extends AppCompatActivity implements MaterialTabListener{
+public class MainActivity extends AppCompatActivity{
     @Bind(R.id.toolbar_main)
     Toolbar mToolBar;
-    @Bind(R.id.tabHost)
-    MaterialTabHost mTabHost;
-    @Bind(R.id.pager)
-    ViewPager mViewPager;
-    ViewPagerAdapter mAdapter;
+    @Bind(R.id.syllabus_bg)
+    LinearLayout mSyllabusbgLL;
+    @Bind(R.id.dayHoriScrollView)
+    SyncHorizontalScrollView mDayHoriScrollView;
+    @Bind(R.id.timeScrollView)
+    SyncScrollView mTimeScrollView;
+    @Bind(R.id.columnScrollView)
+    SyncScrollView mColumnScrollView;
+    @Bind(R.id.rowHoriScrollView)
+    SyncHorizontalScrollView mRowHoriScrollView;
+    @Bind(R.id.classGridLayout)
+    GridLayout mClassTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,16 +65,14 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
         ButterKnife.bind(this); //butterknife init
         setSupportActionBar(mToolBar);
 
-        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mViewPager.setAdapter(mAdapter);
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            mTabHost.addTab(
-                    mTabHost.newTab()
-                            .setText(mAdapter.getPageTitle(i))
-                            .setTabListener(this)
-            );
+        //init Scroll
+        mDayHoriScrollView.setView(mRowHoriScrollView);
+        mRowHoriScrollView.setView(mDayHoriScrollView);
+        mDayHoriScrollView.setHorizontalScrollBarEnabled(false);
 
-        }
+        mTimeScrollView.setView(mColumnScrollView);
+        mColumnScrollView.setView(mTimeScrollView);
+        mTimeScrollView.setVerticalScrollBarEnabled(false);
     }
 
     private void cacheData() {
@@ -93,55 +102,4 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
                 });
     }
 
-    @OnPageChange(R.id.pager)
-    void onPageChange(int position){
-        mTabHost.setSelectedNavigationItem(position);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
-        return true;
-    }
-
-
-    @Override
-    public void onTabSelected(MaterialTab tab) {
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabReselected(MaterialTab tab) {
-
-    }
-
-    @Override
-    public void onTabUnselected(MaterialTab tab) {
-
-    }
-
-
-    private class ViewPagerAdapter extends FragmentStatePagerAdapter {
-
-        public ViewPagerAdapter(FragmentManager fm) {
-            super(fm);
-
-        }
-
-        public Fragment getItem(int num) {
-            return new SyllabusFragment();// TODO: 16-1-13
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return "Sezione " + position;
-        }
-
-    }
 }

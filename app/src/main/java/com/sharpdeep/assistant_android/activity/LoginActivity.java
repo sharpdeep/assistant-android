@@ -84,7 +84,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private Observable<Long> getAuthTimeObservable(){
-        // TODO: 16-1-13
         long now = new Date().getTime()/1000;
         return Observable.create(new Observable.OnSubscribe<Long>() {
             @Override
@@ -96,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
                     subscriber.onNext(0l);
                 }
             }
-        });
+        }).subscribeOn(Schedulers.io());
     }
 
     @OnClick(R.id.sign_in_button)
@@ -125,7 +124,6 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onCompleted() {
                             L.d("completed!");
-                            //进入mainActivity(todo)
                             mSignInBtn.setEnabled(true);
                             mProgress.setVisibility(View.GONE);
                         }
@@ -259,7 +257,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startActivityAndFinsh(Class to){
-        AndroidUtil.startActivity(this,to);
+        AndroidUtil.startActivity(this, to);
         this.finish();
     }
 }

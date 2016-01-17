@@ -44,4 +44,6 @@ dependencies {
     compile 'com.github.qiujuer:genius:2.4.0'
     compile 'com.pnikosis:materialish-progress:1.7' //materialish-progress
     compile 'it.neokree:MaterialTabs:0.11'
+    compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'com.melnykov:floatingactionbutton:1.3.0'
 }
