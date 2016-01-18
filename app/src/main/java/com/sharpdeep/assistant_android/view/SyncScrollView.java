@@ -5,10 +5,12 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ScrollView;
 
+import com.melnykov.fab.ObservableScrollView;
+
 /**
  * Created by bear on 16-1-15.
  */
-public class SyncScrollView extends ScrollView{
+public class SyncScrollView extends ObservableScrollView{
     private View mView;
 
     public SyncScrollView(Context context) {
