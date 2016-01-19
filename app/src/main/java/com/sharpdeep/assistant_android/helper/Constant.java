@@ -6,4 +6,7 @@ package com.sharpdeep.assistant_android.helper;
 public class Constant {
     public static final String API_PREFIX = "/api";
     public static final long EXPRIED = 7*24*3600;//token有效期
+
+    public static final String SUCCESS = "success";
+    public static final String FAILED = "failed";
 }

@@ -1,12 +1,10 @@
 package com.sharpdeep.assistant_android.api;
 
 
-import com.sharpdeep.assistant_android.model.AuthResult;
+import com.sharpdeep.assistant_android.model.resultModel.AuthResult;
 import com.sharpdeep.assistant_android.helper.Constant;
-import com.sharpdeep.assistant_android.model.SyllabusResult;
+import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 
-import retrofit.Call;
-import retrofit.CallAdapter;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;

@@ -8,4 +8,5 @@
     <dimen name="nav_header_text_margin_left">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="loginactivity_logo_from_login">20dp</dimen>
+
 </resources>

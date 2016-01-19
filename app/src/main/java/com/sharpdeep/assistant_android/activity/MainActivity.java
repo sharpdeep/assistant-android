@@ -5,30 +5,38 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aigestudio.wheelpicker.core.AbstractWheelDecor;
 import com.aigestudio.wheelpicker.core.AbstractWheelPicker;
-import com.aigestudio.wheelpicker.view.WheelCrossPicker;
 import com.aigestudio.wheelpicker.view.WheelCurvedPicker;
 import com.melnykov.fab.FloatingActionButton;
 import com.sharpdeep.assistant_android.R;
+import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.DataCacher;
+import com.sharpdeep.assistant_android.helper.RetrofitHelper;
+import com.sharpdeep.assistant_android.helper.SyllabusFormater;
+import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
 import com.sharpdeep.assistant_android.model.eventModel.ImportDialogEvent;
+import com.sharpdeep.assistant_android.util.DisplayUtil;
 import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.view.SyncHorizontalScrollView;
 import com.sharpdeep.assistant_android.view.SyncScrollView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
@@ -38,6 +46,7 @@ import de.greenrobot.event.EventBus;
 import me.drakeet.materialdialog.MaterialDialog;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -61,6 +70,9 @@ public class MainActivity extends AppCompatActivity{
     GridLayout mClassTable;
     @Bind(R.id.fab)
     FloatingActionButton mFab;
+    @Bind(R.id.snackbar_contanier)
+    CoordinatorLayout mSnackbarContanier;
+    Snackbar mSnackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +180,7 @@ public class MainActivity extends AppCompatActivity{
                         dialog.dismiss();
                     }
                 })
+                .setCanceledOnTouchOutside(true)
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
@@ -205,8 +218,81 @@ public class MainActivity extends AppCompatActivity{
                 });
     }
 
+    //获取课表
     public void onEvent(ImportDialogEvent event){
-        L.d("get "+event.getSelectYear()+" and "+event.getSelectSemester()+" from event");
+        L.d("get " + event.getSelectYear() + " and " + event.getSelectSemester() + " from event");
+        RetrofitHelper.getRetrofit(MainActivity.this)
+                .create(AssistantService.class)
+                .getSyllabus(DataCacher.getInstance().getToken(),event.getSelectYear(),event.getSelectSemester())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SyllabusResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(MainActivity.this,"服务器好像出了点问题，稍后再试",Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(SyllabusResult syllabusResult) {
+                        if (syllabusResult.isSuccess()) {
+                            //显示课表(todo)
+                            mSnackbar = Snackbar.make(mSnackbarContanier.getRootView(),"成功获取课表",Snackbar.LENGTH_SHORT);
+                            showSyllabus(syllabusResult);
+                        } else {
+                            mSnackbar = Snackbar.make(mSnackbarContanier.getRootView(),"获取课表失败",Snackbar.LENGTH_SHORT);
+                        }
+                        mFab.hide();
+                        mSnackbar.setCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                super.onDismissed(snackbar, event);
+                                mFab.show();
+                            }
+                        })
+                                .show();
+                    }
+                });
+    }
+
+    private void showSyllabus(SyllabusResult result) {
+        mClassTable.removeAllViews();
+        SyllabusFormater formater = new SyllabusFormater(MainActivity.this,result);
+        for(;!formater.end();formater.next()){
+            TextView grid = new TextView(MainActivity.this);
+            grid.setTextSize(11);
+            grid.setText(formater.getGridText());
+            grid.setWidth(formater.getGridWidth());
+            grid.setHeight(formater.getGridHeigh());
+
+            GridLayout.Spec rowSpec = GridLayout.spec(formater.getGridRowSpec());
+            GridLayout.Spec columnSpec = GridLayout.spec(formater.getGridColumnSpec());
+        }
+
+
+
+//        int gridWidth = DisplayUtil.dip2px(MainActivity.this,50);
+//        int gridHeigh = DisplayUtil.dip2px(MainActivity.this,60);
+//        TextView grid = new TextView(MainActivity.this);
+//        grid.setTextSize(11);
+//        grid.setText("THis is grid");
+//        grid.setBackgroundColor(0x88274892);
+//        grid.setWidth(gridWidth);
+//        grid.setHeight(gridHeigh);
+//        grid.setGravity(Gravity.CENTER);
+//
+//        GridLayout.Spec rowSpec = GridLayout.spec(0,2);
+//        GridLayout.Spec columSpec = GridLayout.spec(0,2);
+//        GridLayout.LayoutParams params = new GridLayout.LayoutParams(rowSpec,columSpec);
+//        params.setGravity(Gravity.CENTER);
+//        mClassTable.addView(grid, params);
+//
+//        grid.requestLayout();
+
     }
 
     @Override

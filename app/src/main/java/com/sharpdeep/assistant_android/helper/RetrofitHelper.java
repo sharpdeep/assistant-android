@@ -24,7 +24,7 @@ public class RetrofitHelper {
         OkHttpClient client = new OkHttpClient();
         //set time out interval
         client.setReadTimeout(10, TimeUnit.MINUTES);
-        client.setConnectTimeout(10, TimeUnit.MINUTES);
+        client.setConnectTimeout(5, TimeUnit.MINUTES);
         client.setWriteTimeout(10, TimeUnit.MINUTES);
 
         //print log

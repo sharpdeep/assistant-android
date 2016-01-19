@@ -1,10 +1,11 @@
 
-package com.sharpdeep.assistant_android.model;
+package com.sharpdeep.assistant_android.model.resultModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.sharpdeep.assistant_android.helper.Constant;
 
 public class SyllabusResult {
 
@@ -16,7 +17,7 @@ public class SyllabusResult {
     private String status;
     @SerializedName("syllabuses")
     @Expose
-    private List<Syllabus> syllabuses = new ArrayList<Syllabus>();
+    private List<Lesson> syllabus  = new ArrayList<Lesson>();
 
     /**
      * 
@@ -57,19 +58,22 @@ public class SyllabusResult {
     /**
      * 
      * @return
-     *     The syllabuses
+     *     The syllabus
      */
-    public List<Syllabus> getSyllabuses() {
-        return syllabuses;
+    public List<Lesson> getSyllabus() {
+        return syllabus;
     }
 
     /**
      * 
-     * @param syllabuses
+     * @param lessons
      *     The syllabuses
      */
-    public void setSyllabuses(List<Syllabus> syllabuses) {
-        this.syllabuses = syllabuses;
+    public void setSyllabus(List<Lesson> lessons) {
+        this.syllabus = lessons;
     }
 
+    public Boolean isSuccess(){
+        return Constant.SUCCESS.equals(this.status);
+    }
 }

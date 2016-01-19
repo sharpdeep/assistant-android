@@ -17,7 +17,7 @@ import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
-import com.sharpdeep.assistant_android.model.AuthResult;
+import com.sharpdeep.assistant_android.model.resultModel.AuthResult;
 import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
 import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.util.AndroidUtil;

@@ -1,7 +1,8 @@
-package com.sharpdeep.assistant_android.model;
+package com.sharpdeep.assistant_android.model.resultModel;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.sharpdeep.assistant_android.helper.Constant;
 
 /**
  * Created by bear on 16-1-10.
@@ -51,7 +52,7 @@ public class AuthResult {
     }
 
     public Boolean isSuccess(){
-        return "success".equals(this.status);
+        return Constant.SUCCESS.equals(this.status);
     }
 
     class Data {

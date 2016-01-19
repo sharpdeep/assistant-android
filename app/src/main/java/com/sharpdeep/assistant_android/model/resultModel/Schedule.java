@@ -1,8 +1,13 @@
 
-package com.sharpdeep.assistant_android.model;
+package com.sharpdeep.assistant_android.model.resultModel;
+
+import android.content.Intent;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Schedule {
 
@@ -154,4 +159,77 @@ public class Schedule {
         this._6 = _6;
     }
 
+    public String get(int index){
+        switch (index){
+            case 0:
+                return _0;
+            case 1:
+                return _1;
+            case 2:
+                return _2;
+            case 3:
+                return _3;
+            case 4:
+                return _4;
+            case 5:
+                return _5;
+            case 6:
+                return _6;
+            default:
+                return "";
+        }
+    }
+
+    //一周几次,连续课程算一次
+    public int getClassTimeEachWeek(){
+        int count = 0;
+        for (int i = 0; i < 7; i++){
+            if (!"".equals(get(i))){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public List<Integer> getClassWeeks(){
+        List<Integer> classWeeks = new ArrayList<>();
+        for (int i = 0; i < 7; i++){
+            if (!"".equals(get(i))){
+                classWeeks.add(i);
+            }
+        }
+        return classWeeks;
+    }
+
+    public List<Integer> getClassTimeByWeek(int week){
+        List<Integer> classTime = new ArrayList<>();
+        String strTime = get(week);
+        for (int i = 0; i < strTime.length(); i++){
+            classTime.add(str2int(String.valueOf(strTime.charAt(i))));
+        }
+        return classTime;
+    }
+
+    private int str2int(String time){
+        if (time != "A" && time != "B" && time != "C" && time != "0"){
+            return Integer.valueOf(time);
+        }
+        switch (time) {
+            case "0":
+                return 10;
+            case "A":
+                return 11;
+            case "B":
+                return 12;
+            case "C":
+                return 13;
+            default:
+                return 0;
+        }
+    }
+
+    //该天上多少课时
+    public int getClassCountByWeek(int week){
+        return getClassTimeByWeek(week).size();
+    }
 }

@@ -1,10 +1,10 @@
 
-package com.sharpdeep.assistant_android.model;
+package com.sharpdeep.assistant_android.model.resultModel;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Syllabus {
+public class Lesson {
 
     @SerializedName("classroom")
     @Expose
@@ -30,6 +30,12 @@ public class Syllabus {
     @SerializedName("teacher")
     @Expose
     private String teacher;
+
+    private Boolean isLessonGrid = true; //是否是课程格子
+
+    public Lesson(Boolean isLessonGrid){
+        this.isLessonGrid = isLessonGrid;
+    }
 
     /**
      * 
@@ -173,6 +179,10 @@ public class Syllabus {
      */
     public void setTeacher(String teacher) {
         this.teacher = teacher;
+    }
+
+    public Boolean isLessonGrid(){
+        return this.isLessonGrid;
     }
 
 }
