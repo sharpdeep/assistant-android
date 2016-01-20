@@ -31,12 +31,21 @@ public class Lesson {
     @Expose
     private String teacher;
 
-    private Boolean isLessonGrid = true; //是否是课程格子
+    private Boolean isLessonGrid; //是否是课程格子
 
     public Lesson(Boolean isLessonGrid){
         this.isLessonGrid = isLessonGrid;
     }
 
+    /*
+    此处神坑,自定义一个成员变量 isLessonGrid, 如果采用retrofit方式自动生成对象，不会初始化。
+    就算声明时候指定为 true, 同样出现NullPoint。
+
+    解决办法是在一个无参构造器中初始化...
+     */
+    public Lesson(){
+        this.isLessonGrid = true;
+    }
     /**
      * 
      * @return

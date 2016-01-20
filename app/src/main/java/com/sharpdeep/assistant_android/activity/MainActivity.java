@@ -235,6 +235,8 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onError(Throwable e) {
                         Toast.makeText(MainActivity.this,"服务器好像出了点问题，稍后再试",Toast.LENGTH_SHORT).show();
+                        L.d(e.toString());
+                        e.printStackTrace();
                     }
 
                     @Override
@@ -263,35 +265,26 @@ public class MainActivity extends AppCompatActivity{
         mClassTable.removeAllViews();
         SyllabusFormater formater = new SyllabusFormater(MainActivity.this,result);
         for(;!formater.end();formater.next()){
+//            L.d(formater.getGridText()+",("+formater.getGridColumnSpec()+","+formater.getGridColumnSpan()+"),("+formater.getGridRowSpec()+","+formater.getGridRowSpan()+"),("+formater.getGridHeigh()+","+formater.getGridWidth()+")");
             TextView grid = new TextView(MainActivity.this);
             grid.setTextSize(11);
             grid.setText(formater.getGridText());
+            grid.setTextColor(formater.getTextColor());
+            grid.setBackgroundColor(formater.getBGRandomColor());
             grid.setWidth(formater.getGridWidth());
             grid.setHeight(formater.getGridHeigh());
+            grid.setGravity(Gravity.CENTER);
 
-            GridLayout.Spec rowSpec = GridLayout.spec(formater.getGridRowSpec());
-            GridLayout.Spec columnSpec = GridLayout.spec(formater.getGridColumnSpec());
+            GridLayout.Spec rowSpec = GridLayout.spec(formater.getGridRowSpec(),formater.getGridRowSpan());
+            GridLayout.Spec columnSpec = GridLayout.spec(formater.getGridColumnSpec(),formater.getGridColumnSpan());
+            GridLayout.LayoutParams params = new GridLayout.LayoutParams(rowSpec,columnSpec);
+            params.setGravity(Gravity.CENTER);
+            params.setMargins(2,1,2,1);
+            mClassTable.addView(grid,params);
+            grid.requestLayout();
+            mClassTable.requestLayout();
         }
 
-
-
-//        int gridWidth = DisplayUtil.dip2px(MainActivity.this,50);
-//        int gridHeigh = DisplayUtil.dip2px(MainActivity.this,60);
-//        TextView grid = new TextView(MainActivity.this);
-//        grid.setTextSize(11);
-//        grid.setText("THis is grid");
-//        grid.setBackgroundColor(0x88274892);
-//        grid.setWidth(gridWidth);
-//        grid.setHeight(gridHeigh);
-//        grid.setGravity(Gravity.CENTER);
-//
-//        GridLayout.Spec rowSpec = GridLayout.spec(0,2);
-//        GridLayout.Spec columSpec = GridLayout.spec(0,2);
-//        GridLayout.LayoutParams params = new GridLayout.LayoutParams(rowSpec,columSpec);
-//        params.setGravity(Gravity.CENTER);
-//        mClassTable.addView(grid, params);
-//
-//        grid.requestLayout();
 
     }
 

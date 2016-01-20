@@ -205,13 +205,17 @@ public class Schedule {
         List<Integer> classTime = new ArrayList<>();
         String strTime = get(week);
         for (int i = 0; i < strTime.length(); i++){
-            classTime.add(str2int(String.valueOf(strTime.charAt(i))));
+            String tempStr = String.valueOf(strTime.charAt(i));
+            if (tempStr.equals("单") || tempStr.equals("双")){
+                continue;
+            }
+            classTime.add(str2int(tempStr));
         }
         return classTime;
     }
 
     private int str2int(String time){
-        if (time != "A" && time != "B" && time != "C" && time != "0"){
+        if (!time.equals("A") && !time.equals("B") && !time.equals("C") &&! time.equals( "0")){
             return Integer.valueOf(time);
         }
         switch (time) {
@@ -228,7 +232,7 @@ public class Schedule {
         }
     }
 
-    //该天上多少课时
+    //该天上多少课时,不一定连续
     public int getClassCountByWeek(int week){
         return getClassTimeByWeek(week).size();
     }
