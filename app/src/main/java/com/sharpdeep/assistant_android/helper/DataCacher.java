@@ -12,9 +12,18 @@ public class DataCacher {
     private int currentSemester = -1;
     private long authTime = -1;
     private String identify = "";
+    private User currentUser;
 
     private DataCacher(){
 
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 
     public static DataCacher getInstance(){

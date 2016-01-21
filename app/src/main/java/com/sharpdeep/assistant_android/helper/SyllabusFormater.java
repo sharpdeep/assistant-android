@@ -19,7 +19,7 @@ import java.util.Random;
 public class SyllabusFormater {
     private SyllabusResult mSyllabusResult;
     private List<Lesson> lessons;
-    private final static int mClassTableRow = 14;
+    private final static int mClassTableRow = 13;
     private final static int mClassTableColumn = 7;
     private Lesson mClassTable[][];
     private static int weekIndex = 0;

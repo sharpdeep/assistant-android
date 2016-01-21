@@ -22,6 +22,13 @@ import com.aigestudio.wheelpicker.core.AbstractWheelDecor;
 import com.aigestudio.wheelpicker.core.AbstractWheelPicker;
 import com.aigestudio.wheelpicker.view.WheelCurvedPicker;
 import com.melnykov.fab.FloatingActionButton;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.DataCacher;
@@ -100,6 +107,44 @@ public class MainActivity extends AppCompatActivity{
         //init Fab scroll action
         mFab.attachToScrollView(mColumnScrollView);
         mFab.attachToScrollView(mTimeScrollView);
+
+        //init DrawMenu
+        PrimaryDrawerItem homeItem = new PrimaryDrawerItem()
+                .withName(R.string.home_page)
+                .withIcon(R.drawable.ic_action_home)
+                .withSelectedIcon(R.drawable.ic_action_home_selected);
+
+        PrimaryDrawerItem oaItem = new PrimaryDrawerItem()
+                .withName(R.string.oa_page)
+                .withIcon(R.drawable.ic_oa)
+                .withSelectedIcon(R.drawable.ic_oa_selected);
+
+        PrimaryDrawerItem settingItem = new PrimaryDrawerItem()
+                .withName(R.string.setting_page)
+                .withIcon(R.drawable.ic_action_settings)
+                .withSelectedIcon(R.drawable.ic_action_settings_selected);
+
+        PrimaryDrawerItem suggestionItem = new PrimaryDrawerItem()
+                .withName(R.string.suggestion_page)
+                .withIcon(R.drawable.ic_suggestion)
+                .withSelectedIcon(R.drawable.ic_suggestion_selected);
+
+        PrimaryDrawerItem exitItem = new PrimaryDrawerItem()
+                .withName(R.string.exit)
+                .withIcon(R.drawable.ic_exit)
+                .withSelectedIcon(R.drawable.ic_exit_selected);
+
+        AccountHeader accountHeader = new AccountHeaderBuilder()
+                .withActivity(MainActivity.this)
+                .withHeaderBackground(R.drawable.header)
+                .addProfiles(new ProfileDrawerItem().withName(DataCacher.getInstance().getCurrentUser().getUsername()).withIcon(R.drawable.profile))
+                .build();
+
+        new DrawerBuilder().withActivity(MainActivity.this)
+                .withToolbar(mToolBar)
+                .withAccountHeader(accountHeader)
+                .addDrawerItems(homeItem, oaItem,new DividerDrawerItem(),settingItem,suggestionItem,new DividerDrawerItem(),exitItem)
+                .build();
     }
 
     @OnClick(R.id.fab)
@@ -213,6 +258,7 @@ public class MainActivity extends AppCompatActivity{
                             DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentSemester());
                             DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
                             DataCacher.getInstance().setToken(appInfo.getCurrentUser().getToken());
+                            DataCacher.getInstance().setCurrentUser(appInfo.getCurrentUser());
                         }
                     }
                 });
