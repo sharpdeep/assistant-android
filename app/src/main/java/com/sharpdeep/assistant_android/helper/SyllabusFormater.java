@@ -79,7 +79,7 @@ public class SyllabusFormater {
         }
     }
 
-    private Lesson getCurrentLesson(){
+    public Lesson getCurrentLesson(){
         return mClassTable[weekIndex][timeIndex];
     }
 
@@ -159,5 +159,9 @@ public class SyllabusFormater {
             }
         }
         return streak;
+    }
+
+    public boolean getClickable(){
+        return getCurrentLesson().isLessonGrid();
     }
 }

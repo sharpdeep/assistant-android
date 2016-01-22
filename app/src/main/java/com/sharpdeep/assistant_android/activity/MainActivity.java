@@ -28,23 +28,27 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.helper.SyllabusFormater;
-import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
 import com.sharpdeep.assistant_android.model.eventModel.ImportDialogEvent;
-import com.sharpdeep.assistant_android.util.DisplayUtil;
+import com.sharpdeep.assistant_android.model.eventModel.LessonGridClickEvent;
+import com.sharpdeep.assistant_android.model.resultModel.Lesson;
+import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
+import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.view.SyncHorizontalScrollView;
 import com.sharpdeep.assistant_android.view.SyncScrollView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -137,6 +141,21 @@ public class MainActivity extends AppCompatActivity{
         AccountHeader accountHeader = new AccountHeaderBuilder()
                 .withActivity(MainActivity.this)
                 .withHeaderBackground(R.drawable.header)
+                .withOnlyMainProfileImageVisible(true)
+                .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
+                    @Override
+                    public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
+                        //显示个人主页(todo)
+                        Toast.makeText(MainActivity.this,"onclick",Toast.LENGTH_SHORT).show();
+                        return false;//false 为 click后close
+                    }
+
+                    @Override
+                    public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
+                        Toast.makeText(MainActivity.this,"快别按了，我要窒息了！",Toast.LENGTH_SHORT).show();
+                        return true; //true为出发long click就不触发click
+                    }
+                })
                 .addProfiles(new ProfileDrawerItem().withName(DataCacher.getInstance().getCurrentUser().getUsername()).withIcon(R.drawable.profile))
                 .build();
 
@@ -320,18 +339,39 @@ public class MainActivity extends AppCompatActivity{
             grid.setWidth(formater.getGridWidth());
             grid.setHeight(formater.getGridHeigh());
             grid.setGravity(Gravity.CENTER);
+            grid.setClickable(formater.getClickable());
+            if (formater.getClickable()){
+                final Lesson currentLesson  = formater.getCurrentLesson();
+                grid.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LessonGridClickEvent event = new LessonGridClickEvent();
+                        event.setLeeson(currentLesson);
+                        EventBus.getDefault().post(event);
+                    }
+                });
+            }
 
             GridLayout.Spec rowSpec = GridLayout.spec(formater.getGridRowSpec(),formater.getGridRowSpan());
             GridLayout.Spec columnSpec = GridLayout.spec(formater.getGridColumnSpec(),formater.getGridColumnSpan());
             GridLayout.LayoutParams params = new GridLayout.LayoutParams(rowSpec,columnSpec);
             params.setGravity(Gravity.CENTER);
-            params.setMargins(2,1,2,1);
-            mClassTable.addView(grid,params);
+            params.setMargins(2, 1, 2, 1);
+            mClassTable.addView(grid, params);
             grid.requestLayout();
             mClassTable.requestLayout();
         }
 
 
+    }
+
+    public void onEventMainThread(LessonGridClickEvent event){
+        Lesson lesson = event.getLeeson();
+        Toast.makeText(MainActivity.this,lesson.getName(),Toast.LENGTH_SHORT).show();
+
+        Map<String,String> extra = new HashMap<>();
+        extra.put("lesson_name",lesson.getName());
+        AndroidUtil.startActivityWithExtraStr(MainActivity.this,LessonHomePageActivity.class,extra);
     }
 
     @Override

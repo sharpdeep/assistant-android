@@ -385,12 +385,10 @@
                     android:id="@+id/rowHoriScrollView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-
                     <GridLayout
                         android:id="@+id/classGridLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
-
                     </GridLayout>
                 </com.sharpdeep.assistant_android.view.SyncHorizontalScrollView>
             </com.sharpdeep.assistant_android.view.SyncScrollView>
