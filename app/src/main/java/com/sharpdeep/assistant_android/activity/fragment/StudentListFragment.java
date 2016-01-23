@@ -1,5 +1,6 @@
 package com.sharpdeep.assistant_android.activity.fragment;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,20 +46,55 @@ public class StudentListFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private List<Student> mStudentList = new ArrayList<>();
 
-    public StudentListFragment(List<Student> studentList){
-        this.mStudentList = studentList;
+    private String mLessonId;
+
+    public StudentListFragment(String lessonId){
+        this.mLessonId = lessonId;
     }
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_lesson_studentlist,container,false);
+        View view = inflater.inflate(R.layout.fragment_lesson_studentlist,container,false);
+        getStudentListThenBindData(view);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    public void getStudentListThenBindData(final View view) {
+        Retrofit retrofit = RetrofitHelper.getRetrofit(getContext());
+        retrofit.create(AssistantService.class)
+                .getStudentListByClassid(DataCacher.getInstance().getToken(),mLessonId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<StudentListResult>() {
+                    @Override
+                    public void onCompleted() {
+                        bindData(view);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getContext(), "网络出了点问题", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(StudentListResult studentListResult) {
+                        if (studentListResult.isSuccess()) {
+                            mStudentList = studentListResult.getStudents();
+                        } else {
+                            Toast.makeText(getContext(), studentListResult.getMsg(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void bindData(View view) {
         mViewStudentList = (RecyclerView) view.findViewById(R.id.recyclerview_studentlist);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mViewStudentList.setLayoutManager(layoutManager);

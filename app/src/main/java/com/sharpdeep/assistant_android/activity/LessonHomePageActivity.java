@@ -55,50 +55,24 @@ public class LessonHomePageActivity  extends AppCompatActivity{
 
     private void init() {
         ButterKnife.bind(this);
-//        EventBus.getDefault().register(LessonHomePageActivity.this);
 
+        //get data from MainActivity
         Bundle bundle = this.getIntent().getExtras();
         mLessonName = bundle.getString("lesson_name");
         mLessonColor = Integer.valueOf(bundle.getString("lesson_color"));
         mLessonId = bundle.getString("lesson_id");
         mLessonTeacher = bundle.getString("lesson_teacher");
-        mHeader.setText(mLessonName.substring(mLessonName.indexOf("]")+1));
 
+        //init view's text
+        mHeader.setText(mLessonName.substring(mLessonName.indexOf("]")+1));
         mTabTitleList = new ArrayList<>();
         mTabTitleList.add(getString(R.string.lesson_homepage_page1));
         mTabTitleList.add(getString(R.string.lesson_homepage_page2));
         mTabTitleList.add(getString(R.string.lesson_homepage_page3));
 
-        getStudentList();
+        setupViewPager();
     }
 
-    private void getStudentList() {
-        Retrofit retrofit = RetrofitHelper.getRetrofit(LessonHomePageActivity.this);
-        retrofit.create(AssistantService.class)
-                .getStudentListByClassid(DataCacher.getInstance().getToken(),mLessonId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<StudentListResult>() {
-                    @Override
-                    public void onCompleted() {
-                        setupViewPager();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(LessonHomePageActivity.this,"网络出了点问题",Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onNext(StudentListResult studentListResult) {
-                        if (studentListResult.isSuccess()){
-                            mStudentList = studentListResult.getStudents();
-                        }else{
-                            Toast.makeText(LessonHomePageActivity.this,studentListResult.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
 
     private void setupViewPager() {
         mViewPager.getViewPager().setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
@@ -137,7 +111,7 @@ public class LessonHomePageActivity  extends AppCompatActivity{
 
         @Override
         public Fragment getItem(int position) {
-            return new StudentListFragment(mStudentList);
+            return new StudentListFragment(mLessonId);
         }
 
         @Override
@@ -156,11 +130,7 @@ public class LessonHomePageActivity  extends AppCompatActivity{
 
     @Override
     protected void onDestroy() {
-//        EventBus.getDefault().unregister(LessonHomePageActivity.this);
         super.onDestroy();
     }
 
-    public String getLessonId(){
-        return this.mLessonId;
-    }
 }
