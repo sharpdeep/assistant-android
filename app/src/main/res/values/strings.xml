@@ -18,4 +18,8 @@
     <string name="suggestion_page">意见反馈</string>
 
     <string name="exit">注销</string>
+
+    <string name="lesson_homepage_page1">学生列表</string>
+    <string name="lesson_homepage_page2">讨论区</string>
+    <string name="lesson_homepage_page3">作业区</string>
 </resources>

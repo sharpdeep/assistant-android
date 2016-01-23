@@ -8,6 +8,7 @@ import com.sharpdeep.assistant_android.model.resultModel.Lesson;
 public class LessonGridClickEvent {
     private String message = "";
     private Lesson leeson;
+    private int lessonColor;
 
     public String getMessage() {
         return message;
@@ -23,5 +24,13 @@ public class LessonGridClickEvent {
 
     public void setLeeson(Lesson leeson) {
         this.leeson = leeson;
+    }
+
+    public int getLessonColor() {
+        return lessonColor;
+    }
+
+    public void setLessonColor(int lessonColor) {
+        this.lessonColor = lessonColor;
     }
 }

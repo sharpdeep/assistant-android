@@ -3,6 +3,7 @@ package com.sharpdeep.assistant_android.api;
 
 import com.sharpdeep.assistant_android.model.resultModel.AuthResult;
 import com.sharpdeep.assistant_android.helper.Constant;
+import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 
 import retrofit.http.Field;
@@ -25,4 +26,7 @@ public interface AssistantService {
 
     @GET(prefix+"/syllabus/{start_year}/{semester}")
     Observable<SyllabusResult> getSyllabus(@Header("Authorization") String token,@Path("start_year") String start_year,@Path("semester")int semester);
+
+    @GET(prefix+"/classinfo/studentlist/{classid}")
+    Observable<StudentListResult> getStudentListByClassid(@Header("Authorization") String token,@Path("classid") String classid);
 }

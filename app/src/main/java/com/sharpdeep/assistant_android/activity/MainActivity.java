@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity{
 
         AccountHeader accountHeader = new AccountHeaderBuilder()
                 .withActivity(MainActivity.this)
+
                 .withHeaderBackground(R.drawable.header)
                 .withOnlyMainProfileImageVisible(true)
                 .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
@@ -156,7 +157,9 @@ public class MainActivity extends AppCompatActivity{
                         return true; //true为出发long click就不触发click
                     }
                 })
-                .addProfiles(new ProfileDrawerItem().withName(DataCacher.getInstance().getCurrentUser().getUsername()).withIcon(R.drawable.profile))
+                .addProfiles(new ProfileDrawerItem()
+                        .withName(DataCacher.getInstance().getCurrentUser().getUsername())
+                        .withIcon(R.drawable.profile))
                 .build();
 
         new DrawerBuilder().withActivity(MainActivity.this)
@@ -335,7 +338,8 @@ public class MainActivity extends AppCompatActivity{
             grid.setTextSize(11);
             grid.setText(formater.getGridText());
             grid.setTextColor(formater.getTextColor());
-            grid.setBackgroundColor(formater.getBGRandomColor());
+            final int lessonColor = formater.getBGRandomColor();
+            grid.setBackgroundColor(lessonColor);
             grid.setWidth(formater.getGridWidth());
             grid.setHeight(formater.getGridHeigh());
             grid.setGravity(Gravity.CENTER);
@@ -347,6 +351,7 @@ public class MainActivity extends AppCompatActivity{
                     public void onClick(View v) {
                         LessonGridClickEvent event = new LessonGridClickEvent();
                         event.setLeeson(currentLesson);
+                        event.setLessonColor(lessonColor);
                         EventBus.getDefault().post(event);
                     }
                 });
@@ -371,6 +376,10 @@ public class MainActivity extends AppCompatActivity{
 
         Map<String,String> extra = new HashMap<>();
         extra.put("lesson_name",lesson.getName());
+        extra.put("lesson_color",String.valueOf(event.getLessonColor()));
+        extra.put("lesson_id",lesson.getId());
+        extra.put("lesson_teacher",lesson.getTeacher());
+
         AndroidUtil.startActivityWithExtraStr(MainActivity.this,LessonHomePageActivity.class,extra);
     }
 
