@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
 import com.sharpdeep.assistant_android.R;
+import com.sharpdeep.assistant_android.activity.fragment.LessonDiscussionFragment;
 import com.sharpdeep.assistant_android.activity.fragment.StudentListFragment;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.DataCacher;
@@ -111,7 +112,15 @@ public class LessonHomePageActivity  extends AppCompatActivity{
 
         @Override
         public Fragment getItem(int position) {
-            return new StudentListFragment(mLessonId);
+            switch (position){
+                case 0:
+                    return new StudentListFragment(mLessonId);
+                case 1:
+                case 2:
+                    return new LessonDiscussionFragment();
+            }
+
+            return null;
         }
 
         @Override

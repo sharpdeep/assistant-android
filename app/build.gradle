@@ -56,4 +56,5 @@ dependencies {
         transitive = true
     }
     compile 'de.hdodenhof:circleimageview:2.0.0'
+    compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.3'
 }
