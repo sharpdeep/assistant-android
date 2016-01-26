@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapter;
@@ -64,6 +65,8 @@ public class LessonDiscussionFragment extends Fragment {
         mViewDiscussionMsgList.setAdapter(mAdapter);
 
         MaterialViewPagerHelper.registerRecyclerView(getActivity(), mViewDiscussionMsgList, null);
+
+        mFabAddDiscussion.attachToRecyclerView(mViewDiscussionMsgList);
     }
 
     @OnClick(R.id.fab_add_discussion)
@@ -104,7 +107,7 @@ public class LessonDiscussionFragment extends Fragment {
 
     private void sendMessage(String message) {
         DiscussionMessage msg = new DiscussionMessage(message,true);
-        mLastestMsg.add(0,msg);
+        mLastestMsg.add(0, msg);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -149,6 +152,5 @@ public class LessonDiscussionFragment extends Fragment {
             msg = (TextView) itemView.findViewById(R.id.textview_lessondiscussion_msg);
         }
     }
-
 
 }

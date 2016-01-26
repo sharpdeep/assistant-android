@@ -60,6 +60,8 @@
                         android:maxLines="1"
                         android:padding="8dp"
                         android:singleLine="true"
+                        android:textColor="@color/black_de"
+                        android:textColorLink="@color/black_de"
                         android:textColorHint="@color/grey_0" />
                     <!--android:textColorHint="@color/abc_primary_text_material_dark" />-->
                 </android.support.design.widget.TextInputLayout>
@@ -80,6 +82,7 @@
                         android:maxLines="1"
                         android:padding="8dp"
                         android:singleLine="true"
+                        android:textColor="@color/black_de"
                         android:textColorHint="@color/grey_0" />
                 </android.support.design.widget.TextInputLayout>
 

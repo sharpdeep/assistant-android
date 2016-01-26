@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
             public void call(Subscriber<? super Long> subscriber) {
                 List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
                 if(infoList.size() > 0){
-                    subscriber.onNext(infoList.get(0).getAuthTime());
+                    subscriber.onNext(infoList.get(0).getCurrentUser().getAuthTime());
                 }else if(infoList.size() == 0){
                     subscriber.onNext(0l);
                 }
@@ -149,6 +149,7 @@ public class LoginActivity extends AppCompatActivity {
                                     user = new User(username, password);
                                     user.setIdentify(authResult.getIdentify());
                                     user.setToken(authResult.getToken());
+                                    user.setAuthTime((new Date().getTime())/1000);
                                     user.save();
                                 } else if (len > 0) {//已存在，更新
                                     L.d("更新用户");
@@ -156,6 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                                     user.setPassword(password);
                                     user.setIdentify(authResult.getIdentify());
                                     user.setToken(authResult.getToken());
+                                    user.setAuthTime((new Date().getTime())/1000);
                                     user.save();
                                 }
                                 //set current user
@@ -164,12 +166,10 @@ public class LoginActivity extends AppCompatActivity {
                                 if(infoList.size() == 0){//之前没有
                                     info = new AppInfo();
                                     info.setCurrentUser(user);
-                                    info.setAuthTime(new Date().getTime()/1000);
                                     info.save();
                                 }else if(infoList.size() > 0){
                                     info = infoList.get(0);
                                     info.setCurrentUser(user);
-                                    info.setAuthTime(new Date().getTime()/1000);
                                     info.save();
                                 }
                                 startActivityAndFinsh(MainActivity.class);

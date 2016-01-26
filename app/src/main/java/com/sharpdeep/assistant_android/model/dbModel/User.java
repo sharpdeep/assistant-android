@@ -18,6 +18,7 @@ public class User extends SugarRecord{
     private String password;
     private String identify = "";
     private String token = "";
+    private long authTime = 0l;
 
     public User(){
 
@@ -60,4 +61,11 @@ public class User extends SugarRecord{
         this.identify = identify;
     }
 
+    public long getAuthTime() {
+        return authTime;
+    }
+
+    public void setAuthTime(long authTime) {
+        this.authTime = authTime;
+    }
 }

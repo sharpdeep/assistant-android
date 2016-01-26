@@ -275,9 +275,6 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void call(AppInfo appInfo) {
                         if (appInfo != null){
-                            DataCacher.getInstance().setAuthTime(appInfo.getAuthTime());
-                            DataCacher.getInstance().setCurrentYear(appInfo.getCurrentYear());
-                            DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentSemester());
                             DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
                             DataCacher.getInstance().setToken(appInfo.getCurrentUser().getToken());
                             DataCacher.getInstance().setCurrentUser(appInfo.getCurrentUser());
