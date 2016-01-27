@@ -17,7 +17,6 @@ import com.sharpdeep.assistant_android.activity.MainActivity;
 public class BottomSheetDialog {
     private Dialog mDialog;
 
-
     public BottomSheetDialog(Context context) {
         mDialog = new Dialog(context,R.style.MaterialDialogSheet);
         mDialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -35,7 +34,7 @@ public class BottomSheetDialog {
     }
 
     public BottomSheetDialog setContentView(View view,ViewGroup.LayoutParams params){
-        mDialog.setContentView(view,params);
+        mDialog.setContentView(view, params);
         return this;
     }
 
@@ -52,4 +51,5 @@ public class BottomSheetDialog {
     public void dismiss(){
         mDialog.dismiss();
     }
+
 }

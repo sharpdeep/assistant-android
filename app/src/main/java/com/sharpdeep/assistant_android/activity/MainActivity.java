@@ -11,8 +11,11 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -95,6 +98,8 @@ public class MainActivity extends AppCompatActivity{
     CoordinatorLayout mSnackbarContanier;
     Snackbar mSnackbar;
 
+    private BottomSheetDialog mBottomSheetDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,9 +126,6 @@ public class MainActivity extends AppCompatActivity{
         //init Fab scroll action
         mFab.attachToScrollView(mColumnScrollView);
         mFab.attachToScrollView(mTimeScrollView);
-
-        //检查默认学期是否有缓存课表
-        showSyllabusIfHasCache();
 
         //init DrawMenu
         PrimaryDrawerItem homeItem = new PrimaryDrawerItem()
@@ -180,6 +182,9 @@ public class MainActivity extends AppCompatActivity{
                 .withAccountHeader(accountHeader)
                 .addDrawerItems(homeItem, oaItem, new DividerDrawerItem(), settingItem, suggestionItem, new DividerDrawerItem(), exitItem)
                 .build();
+
+        //检查默认学期是否有缓存课表
+        showSyllabusIfHasCache();
     }
 
     private void showSyllabusIfHasCache() {
@@ -193,7 +198,7 @@ public class MainActivity extends AppCompatActivity{
         DataCacher.getInstance().setShowingYear(DataCacher.getInstance().getCurrentYear());
         DataCacher.getInstance().setShowingSemester(DataCacher.getInstance().getCurrentSemester());
         DataCacher.getInstance().setShowingSyllabus(result.toJson());
-        L.d("缓存中有"+DataCacher.getInstance().getShowingYear()+DataCacher.getInstance().getShowingSemester()+"的课表");
+        L.d("缓存中有" + DataCacher.getInstance().getShowingYear() + DataCacher.getInstance().getShowingSemester() + "的课表");
     }
 
     @OnClick(R.id.fab)
@@ -213,23 +218,21 @@ public class MainActivity extends AppCompatActivity{
         TextView TxtBottomSheetDefaultSyllabus = (TextView) view.findViewById(R.id.txt_bottom_sheet_01);
         TextView TxtBottomSheet02 = (TextView) view.findViewById(R.id.txt_bottom_sheet_02);
 
-        final BottomSheetDialog dialog = new BottomSheetDialog(MainActivity.this);
-        dialog.setContentView(view)
+        mBottomSheetDialog = new BottomSheetDialog(MainActivity.this);
+        mBottomSheetDialog.setContentView(view)
                 .setCancelable(true)
                 .show();
 
         TxtBottomSheetDefaultSyllabus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                mBottomSheetDialog.dismiss();
                 //设置默认课表
                 setDefaultSyllabus(DataCacher.getInstance().getShowingYear(),
                         DataCacher.getInstance().getShowingSemester(),
                         DataCacher.getInstance().getShowingSyllabus());
             }
         });
-
-
     }
 
     private void setDefaultSyllabus(String showingYear,int showingSemester,String syllabusResult) {
@@ -352,9 +355,9 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void call(Subscriber<? super AppInfo> subscriber) {
                 List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
-                if (infoList.size() > 0){
+                if (infoList.size() > 0) {
                     subscriber.onNext(infoList.get(0));
-                }else{
+                } else {
                     subscriber.onNext(null);
                 }
             }
@@ -500,14 +503,22 @@ public class MainActivity extends AppCompatActivity{
         extra.put("lesson_name",lesson.getName());
         extra.put("lesson_color",String.valueOf(event.getLessonColor()));
         extra.put("lesson_id",lesson.getId());
-        extra.put("lesson_teacher",lesson.getTeacher());
+        extra.put("lesson_teacher", lesson.getTeacher());
 
-        AndroidUtil.startActivityWithExtraStr(MainActivity.this,LessonHomePageActivity.class,extra);
+        AndroidUtil.startActivityWithExtraStr(MainActivity.this, LessonHomePageActivity.class, extra);
     }
 
     @Override
     protected void onDestroy() {
         EventBus.getDefault().unregister(MainActivity.this);
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU){
+            showBottomSheet();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
