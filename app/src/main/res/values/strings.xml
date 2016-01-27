@@ -22,4 +22,7 @@
     <string name="lesson_homepage_page1">学生列表</string>
     <string name="lesson_homepage_page2">讨论区</string>
     <string name="lesson_homepage_page3">作业区</string>
+
+    <string name="bottom_sheet_01">设置当前课表为默认</string>
+    <string name="bottom_sheet_02">待定功能</string>
 </resources>

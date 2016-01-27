@@ -1,10 +1,12 @@
 package com.sharpdeep.assistant_android.activity;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import com.aigestudio.wheelpicker.core.AbstractWheelDecor;
 import com.aigestudio.wheelpicker.core.AbstractWheelPicker;
 import com.aigestudio.wheelpicker.view.WheelCurvedPicker;
+import com.google.gson.Gson;
 import com.melnykov.fab.FloatingActionButton;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -29,18 +33,22 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.orm.query.Condition;
+import com.orm.query.Select;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.helper.SyllabusFormater;
 import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
+import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.model.eventModel.ImportDialogEvent;
 import com.sharpdeep.assistant_android.model.eventModel.LessonGridClickEvent;
 import com.sharpdeep.assistant_android.model.resultModel.Lesson;
 import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
+import com.sharpdeep.assistant_android.view.BottomSheetDialog;
 import com.sharpdeep.assistant_android.view.SyncHorizontalScrollView;
 import com.sharpdeep.assistant_android.view.SyncScrollView;
 
@@ -53,12 +61,14 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 import de.greenrobot.event.EventBus;
 import me.drakeet.materialdialog.MaterialDialog;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -111,6 +121,9 @@ public class MainActivity extends AppCompatActivity{
         //init Fab scroll action
         mFab.attachToScrollView(mColumnScrollView);
         mFab.attachToScrollView(mTimeScrollView);
+
+        //检查默认学期是否有缓存课表
+        showSyllabusIfHasCache();
 
         //init DrawMenu
         PrimaryDrawerItem homeItem = new PrimaryDrawerItem()
@@ -165,14 +178,90 @@ public class MainActivity extends AppCompatActivity{
         new DrawerBuilder().withActivity(MainActivity.this)
                 .withToolbar(mToolBar)
                 .withAccountHeader(accountHeader)
-                .addDrawerItems(homeItem, oaItem,new DividerDrawerItem(),settingItem,suggestionItem,new DividerDrawerItem(),exitItem)
+                .addDrawerItems(homeItem, oaItem, new DividerDrawerItem(), settingItem, suggestionItem, new DividerDrawerItem(), exitItem)
                 .build();
+    }
+
+    private void showSyllabusIfHasCache() {
+        SyllabusResult result = DataCacher.getInstance().getCurrentUser().getSyllabusResult();
+        if (result == null){
+            L.d("no such syllabus cache");
+            return;
+        }
+        showSyllabus(result);
+        //更新DataCacher的showing变量
+        DataCacher.getInstance().setShowingYear(DataCacher.getInstance().getCurrentYear());
+        DataCacher.getInstance().setShowingSemester(DataCacher.getInstance().getCurrentSemester());
+        DataCacher.getInstance().setShowingSyllabus(result.toJson());
+        L.d("缓存中有"+DataCacher.getInstance().getShowingYear()+DataCacher.getInstance().getShowingSemester()+"的课表");
     }
 
     @OnClick(R.id.fab)
     void onFabCilck(View view){
         mFab.hide(true);
         showImportDialog();
+    }
+
+    @OnLongClick(R.id.classGridLayout)
+    boolean onClassTableLongClcik(View view){
+        showBottomSheet();
+        return false;
+    }
+
+    public void showBottomSheet(){
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.menu_bottom_sheet,null);
+        TextView TxtBottomSheetDefaultSyllabus = (TextView) view.findViewById(R.id.txt_bottom_sheet_01);
+        TextView TxtBottomSheet02 = (TextView) view.findViewById(R.id.txt_bottom_sheet_02);
+
+        final BottomSheetDialog dialog = new BottomSheetDialog(MainActivity.this);
+        dialog.setContentView(view)
+                .setCancelable(true)
+                .show();
+
+        TxtBottomSheetDefaultSyllabus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                //设置默认课表
+                setDefaultSyllabus(DataCacher.getInstance().getShowingYear(),
+                        DataCacher.getInstance().getShowingSemester(),
+                        DataCacher.getInstance().getShowingSyllabus());
+            }
+        });
+
+
+    }
+
+    private void setDefaultSyllabus(String showingYear,int showingSemester,String syllabusResult) {
+        Observable.just(new String[]{showingYear,String.valueOf(showingSemester),syllabusResult})
+                .observeOn(Schedulers.io())
+                .subscribe(new Subscriber<String[]>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d("设置默认课表出了点问题");
+                    }
+
+                    @Override
+                    public void onNext(String[] s) {
+                        User user = Select.from(User.class)
+                                .where(Condition.prop("username").eq(DataCacher.getInstance().getCurrentUser().getUsername()))
+                                .first();
+                        user.setCurrentYear(s[0]);
+                        user.setCurrentSemester(Integer.valueOf(s[1]));
+                        user.setSyllabusResult(s[2]);
+                        user.save();
+                        //更新DataCache
+                        DataCacher.getInstance().setCurrentYear(s[0]);
+                        DataCacher.getInstance().setCurrentSemester(Integer.valueOf(s[1]));
+                        DataCacher.getInstance().setCurrentUser(user);
+                        L.d("成功设置"+s[0]+s[1]+"为默认课表");
+                    }
+                });
     }
 
     void showImportDialog(){
@@ -275,6 +364,8 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void call(AppInfo appInfo) {
                         if (appInfo != null){
+                            DataCacher.getInstance().setCurrentYear(appInfo.getCurrentUser().getCurrentYear());
+                            DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentUser().getCurrentSemester());
                             DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
                             DataCacher.getInstance().setToken(appInfo.getCurrentUser().getToken());
                             DataCacher.getInstance().setCurrentUser(appInfo.getCurrentUser());
@@ -286,6 +377,8 @@ public class MainActivity extends AppCompatActivity{
     //获取课表
     public void onEvent(ImportDialogEvent event){
         L.d("get " + event.getSelectYear() + " and " + event.getSelectSemester() + " from event");
+        final String selectedYear = event.getSelectYear();
+        final int selectedSemester = event.getSelectSemester();
         RetrofitHelper.getRetrofit(MainActivity.this)
                 .create(AssistantService.class)
                 .getSyllabus(DataCacher.getInstance().getToken(),event.getSelectYear(),event.getSelectSemester())
@@ -310,6 +403,10 @@ public class MainActivity extends AppCompatActivity{
                             //显示课表(todo)
                             mSnackbar = Snackbar.make(mSnackbarContanier.getRootView(),"成功获取课表",Snackbar.LENGTH_SHORT);
                             showSyllabus(syllabusResult);
+                            //更新DataCache中的showing变量
+                            DataCacher.getInstance().setShowingYear(selectedYear);
+                            DataCacher.getInstance().setShowingSemester(selectedSemester);
+                            DataCacher.getInstance().setShowingSyllabus(syllabusResult.toJson());
                         } else {
                             mSnackbar = Snackbar.make(mSnackbarContanier.getRootView(),"获取课表失败",Snackbar.LENGTH_SHORT);
                         }
@@ -365,6 +462,34 @@ public class MainActivity extends AppCompatActivity{
         }
 
 
+    }
+
+    //缓存课表
+    private void cacheSyllabus(final String year, final int semester,SyllabusResult result){
+        Observable.just(result)
+                .observeOn(Schedulers.io())
+                .subscribe(new Subscriber<SyllabusResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d("缓存课表失败");
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(SyllabusResult result) {
+                        L.d(result.toJson());
+                        User user = DataCacher.getInstance().getCurrentUser();
+                        user.setSyllabusResult(result.toJson());
+                        user.save();
+                        DataCacher.getInstance().setCurrentUser(user);
+                        L.d("课表缓存成功");
+                    }
+                });
     }
 
     public void onEventMainThread(LessonGridClickEvent event){

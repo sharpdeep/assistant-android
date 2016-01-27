@@ -3,11 +3,26 @@ package com.sharpdeep.assistant_android.model.dbModel;
 import android.content.Context;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 import com.orm.dsl.Unique;
+import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
+import com.sharpdeep.assistant_android.util.L;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Time;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by bear on 16-1-9.
@@ -19,6 +34,9 @@ public class User extends SugarRecord{
     private String identify = "";
     private String token = "";
     private long authTime = 0l;
+    private String currentYear;
+    private int currentSemester;
+    private String currentSyllabus;
 
     public User(){
 
@@ -68,4 +86,30 @@ public class User extends SugarRecord{
     public void setAuthTime(long authTime) {
         this.authTime = authTime;
     }
+
+    public String getCurrentYear() {
+        return currentYear;
+    }
+
+    public User setCurrentYear(String currentYear) {
+        this.currentYear = currentYear;
+        return this;
+    }
+
+    public int getCurrentSemester() {
+        return currentSemester;
+    }
+
+    public void setCurrentSemester(int currentSemester) {
+        this.currentSemester = currentSemester;
+    }
+
+    public void setSyllabusResult(String resultStr){
+        this.currentSyllabus = resultStr;
+    }
+
+    public SyllabusResult getSyllabusResult(){
+        return SyllabusResult.fromJson(this.currentSyllabus);
+    }
+
 }

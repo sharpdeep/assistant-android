@@ -3,6 +3,8 @@ package com.sharpdeep.assistant_android.model.resultModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.sharpdeep.assistant_android.helper.Constant;
@@ -75,5 +77,15 @@ public class SyllabusResult {
 
     public Boolean isSuccess(){
         return Constant.SUCCESS.equals(this.status);
+    }
+
+    public String toJson(){
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+    public static SyllabusResult fromJson(String json){
+        Gson gson = new Gson();
+        return gson.fromJson(json,SyllabusResult.class);
     }
 }
