@@ -25,4 +25,8 @@ public class AppInfo extends SugarRecord {
         this.currentUser = currentUser;
     }
 
+    public void logout(){
+        this.currentUser = null;
+    }
+
 }

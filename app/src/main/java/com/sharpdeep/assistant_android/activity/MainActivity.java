@@ -31,15 +31,18 @@ import com.google.gson.Gson;
 import com.melnykov.fab.FloatingActionButton;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.orm.query.Condition;
 import com.orm.query.Select;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
+import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.helper.SyllabusFormater;
@@ -60,6 +63,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -103,7 +107,9 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        if (DataCacher.getInstance().getIdentify().equals(User.IDENTIFY_STUDENT)){
+            setContentView(R.layout.activity_main);
+        }
         cacheData();
         init();
     }
@@ -128,6 +134,13 @@ public class MainActivity extends AppCompatActivity{
         mFab.attachToScrollView(mTimeScrollView);
 
         //init DrawMenu
+        setupDrawer();
+
+        //检查默认学期是否有缓存课表
+        showSyllabusIfHasCache();
+    }
+
+    private void setupDrawer(){
         PrimaryDrawerItem homeItem = new PrimaryDrawerItem()
                 .withName(R.string.home_page)
                 .withIcon(R.drawable.ic_action_home)
@@ -151,6 +164,13 @@ public class MainActivity extends AppCompatActivity{
         PrimaryDrawerItem exitItem = new PrimaryDrawerItem()
                 .withName(R.string.exit)
                 .withIcon(R.drawable.ic_exit)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        logout();
+                        return false;
+                    }
+                })
                 .withSelectedIcon(R.drawable.ic_exit_selected);
 
         AccountHeader accountHeader = new AccountHeaderBuilder()
@@ -182,9 +202,41 @@ public class MainActivity extends AppCompatActivity{
                 .withAccountHeader(accountHeader)
                 .addDrawerItems(homeItem, oaItem, new DividerDrawerItem(), settingItem, suggestionItem, new DividerDrawerItem(), exitItem)
                 .build();
+    }
 
-        //检查默认学期是否有缓存课表
-        showSyllabusIfHasCache();
+    //注销账号
+    private void logout() {
+        //修改appInfo
+        Observable.timer(1, TimeUnit.MICROSECONDS)
+                .observeOn(Schedulers.io())
+                .map(new Func1<Long, Object>() {
+                    @Override
+                    public Object call(Long aLong) {
+                        AppInfo info = Select.from(AppInfo.class).first();
+                        info.logout();
+                        info.save();
+                        return null;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Object>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d("exit error");
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        AndroidUtil.startActivity(MainActivity.this,LoginActivity.class);
+                        MainActivity.this.finish();
+                    }
+                });
     }
 
     private void showSyllabusIfHasCache() {

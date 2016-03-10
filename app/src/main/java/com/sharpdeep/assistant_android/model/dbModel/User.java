@@ -38,8 +38,11 @@ public class User extends SugarRecord{
     private int currentSemester;
     private String currentSyllabus;
 
-    public User(){
+    @Ignore
+    public static final String IDENTIFY_STUDENT = "student";
+    public static final String IDENTIFY_TEACHER = "teacher";
 
+    public User(){
     }
 
     public User(String username, String password) {

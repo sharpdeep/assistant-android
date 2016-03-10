@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.Constant;
+import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.model.resultModel.AuthResult;
 import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
@@ -90,7 +91,13 @@ public class LoginActivity extends AppCompatActivity {
             public void call(Subscriber<? super Long> subscriber) {
                 List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
                 if(infoList.size() > 0){
-                    subscriber.onNext(infoList.get(0).getCurrentUser().getAuthTime());
+                    User cUser = infoList.get(0).getCurrentUser();
+                    if (cUser == null) {
+                        subscriber.onNext(0l);
+                    }else{
+                        subscriber.onNext(cUser.getAuthTime());
+                        DataCacher.getInstance().setIdentify(cUser.getIdentify());
+                    }
                 }else if(infoList.size() == 0){
                     subscriber.onNext(0l);
                 }
@@ -160,6 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                                     user.setAuthTime((new Date().getTime())/1000);
                                     user.save();
                                 }
+                                DataCacher.getInstance().setIdentify(user.getIdentify());
                                 //set current user
                                 List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
                                 AppInfo info;

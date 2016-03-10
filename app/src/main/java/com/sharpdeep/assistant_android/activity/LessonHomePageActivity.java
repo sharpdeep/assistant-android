@@ -16,6 +16,7 @@ import com.sharpdeep.assistant_android.activity.fragment.StudentListFragment;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
+import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.model.resultModel.Student;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 
@@ -50,7 +51,9 @@ public class LessonHomePageActivity  extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lesson_homepage);
+        if (DataCacher.getInstance().getIdentify().equals(User.IDENTIFY_STUDENT)){
+            setContentView(R.layout.activity_lesson_homepage);
+        }
         init();
     }
 
