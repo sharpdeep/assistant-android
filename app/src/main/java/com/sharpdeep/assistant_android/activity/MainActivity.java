@@ -605,4 +605,5 @@ public class MainActivity extends AppCompatActivity{
             DataCacher.getInstance().free();
         }
     }
+
 }

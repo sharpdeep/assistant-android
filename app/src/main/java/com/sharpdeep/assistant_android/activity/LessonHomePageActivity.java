@@ -16,9 +16,11 @@ import com.sharpdeep.assistant_android.activity.fragment.StudentListFragment;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
+import com.sharpdeep.assistant_android.listener.WindowFocusChangedListener;
 import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.model.resultModel.Student;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
+import com.sharpdeep.assistant_android.util.L;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,7 @@ public class LessonHomePageActivity  extends AppCompatActivity{
     private String mLessonId;
     private String mLessonTeacher;
 
+    private WindowFocusChangedListener mWFCListener;
     private List<Student> mStudentList = new ArrayList<>();
 
     @Override
@@ -143,6 +146,18 @@ public class LessonHomePageActivity  extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (mWFCListener != null){
+            mWFCListener.onWindowFocusChangedListener();
+        }
+    }
+
+    public void setOnWindowFocusChangedListener(WindowFocusChangedListener listener){
+        mWFCListener = listener;
     }
 
 }
