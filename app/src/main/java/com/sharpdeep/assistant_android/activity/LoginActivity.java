@@ -180,6 +180,7 @@ public class LoginActivity extends AppCompatActivity {
                                     info.setCurrentUser(user);
                                     info.save();
                                 }
+                                DataCacher.getInstance().setCurrentUser(user);
                                 startActivityAndFinsh(MainActivity.class);
                             }else{//登陆失败
                                 Toast.makeText(LoginActivity.this, authResult.getMsg(), Toast.LENGTH_SHORT).show();

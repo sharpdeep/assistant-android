@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -54,7 +55,9 @@ import com.sharpdeep.assistant_android.model.resultModel.Lesson;
 import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
+import com.sharpdeep.assistant_android.util.ProjectUtil;
 import com.sharpdeep.assistant_android.view.BottomSheetDialog;
+import com.sharpdeep.assistant_android.view.SemesterSelector;
 import com.sharpdeep.assistant_android.view.SyncHorizontalScrollView;
 import com.sharpdeep.assistant_android.view.SyncScrollView;
 
@@ -100,6 +103,8 @@ public class MainActivity extends AppCompatActivity{
     FloatingActionButton mFab;
     @Bind(R.id.snackbar_contanier)
     CoordinatorLayout mSnackbarContanier;
+    @Bind(R.id.toolbar_title_main)
+    TextView mTxtToolbarTitle;
     Snackbar mSnackbar;
 
     private BottomSheetDialog mBottomSheetDialog;
@@ -107,16 +112,16 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (DataCacher.getInstance().getIdentify().equals(User.IDENTIFY_STUDENT)){
-            setContentView(R.layout.activity_main);
-        }
+//        if (DataCacher.getInstance().getIdentify().equals(User.IDENTIFY_STUDENT)){
+//            setContentView(R.layout.activity_main);
+//        }
+        setContentView(R.layout.activity_main);
         cacheData();
         init();
     }
 
     private void init() {
         ButterKnife.bind(this); //butterknife init
-        setSupportActionBar(mToolBar);
         EventBus.getDefault().register(MainActivity.this);
         L.init();
 
@@ -133,11 +138,31 @@ public class MainActivity extends AppCompatActivity{
         mFab.attachToScrollView(mColumnScrollView);
         mFab.attachToScrollView(mTimeScrollView);
 
+        //检查默认学期是否有缓存课表
+        showSyllabusIfHasCache();
+
+        setSupportActionBar(mToolBar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        setupToolBar();
         //init DrawMenu
         setupDrawer();
 
-        //检查默认学期是否有缓存课表
-        showSyllabusIfHasCache();
+    }
+
+    private void setupToolBar() {
+
+        mToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_add_lesson:
+                        showAddLessonDialog();
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     private void setupDrawer(){
@@ -214,7 +239,7 @@ public class MainActivity extends AppCompatActivity{
                     public Object call(Long aLong) {
                         AppInfo info = Select.from(AppInfo.class).first();
                         info.logout();
-                        info.save();
+                        DataCacher.getInstance().logout();
                         return null;
                     }
                 })
@@ -233,7 +258,7 @@ public class MainActivity extends AppCompatActivity{
 
                     @Override
                     public void onNext(Object o) {
-                        AndroidUtil.startActivity(MainActivity.this,LoginActivity.class);
+                        AndroidUtil.startActivity(MainActivity.this, LoginActivity.class);
                         MainActivity.this.finish();
                     }
                 });
@@ -243,6 +268,7 @@ public class MainActivity extends AppCompatActivity{
         SyllabusResult result = DataCacher.getInstance().getCurrentUser().getSyllabusResult();
         if (result == null){
             L.d("no such syllabus cache");
+            mTxtToolbarTitle.setText(R.string.toolbar_title_main);
             return;
         }
         showSyllabus(result);
@@ -250,13 +276,15 @@ public class MainActivity extends AppCompatActivity{
         DataCacher.getInstance().setShowingYear(DataCacher.getInstance().getCurrentYear());
         DataCacher.getInstance().setShowingSemester(DataCacher.getInstance().getCurrentSemester());
         DataCacher.getInstance().setShowingSyllabus(result.toJson());
+
+        mTxtToolbarTitle.setText(DataCacher.getInstance().getShowingYear() + convertSemester2Str(DataCacher.getInstance().getShowingSemester()));
         L.d("缓存中有" + DataCacher.getInstance().getShowingYear() + DataCacher.getInstance().getShowingSemester() + "的课表");
     }
 
     @OnClick(R.id.fab)
     void onFabCilck(View view){
         mFab.hide(true);
-        showImportDialog();
+//        showImportDialog();
     }
 
     @OnLongClick(R.id.classGridLayout)
@@ -267,13 +295,21 @@ public class MainActivity extends AppCompatActivity{
 
     public void showBottomSheet(){
         View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.menu_bottom_sheet,null);
-        TextView TxtBottomSheetDefaultSyllabus = (TextView) view.findViewById(R.id.txt_bottom_sheet_01);
-        TextView TxtBottomSheet02 = (TextView) view.findViewById(R.id.txt_bottom_sheet_02);
+        TextView TxtBottomSheetImportSyllabus = (TextView) view.findViewById(R.id.txt_bottom_sheet_01);
+        TextView TxtBottomSheetDefaultSyllabus = (TextView) view.findViewById(R.id.txt_bottom_sheet_02);
 
         mBottomSheetDialog = new BottomSheetDialog(MainActivity.this);
         mBottomSheetDialog.setContentView(view)
                 .setCancelable(true)
                 .show();
+
+        TxtBottomSheetImportSyllabus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImportDialog();
+                mBottomSheetDialog.dismiss();
+            }
+        });
 
         TxtBottomSheetDefaultSyllabus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -288,7 +324,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void setDefaultSyllabus(String showingYear,int showingSemester,String syllabusResult) {
-        Observable.just(new String[]{showingYear,String.valueOf(showingSemester),syllabusResult})
+        Observable.just(new String[]{showingYear, String.valueOf(showingSemester), syllabusResult})
                 .observeOn(Schedulers.io())
                 .subscribe(new Subscriber<String[]>() {
                     @Override
@@ -309,97 +345,65 @@ public class MainActivity extends AppCompatActivity{
                         user.setCurrentYear(s[0]);
                         user.setCurrentSemester(Integer.valueOf(s[1]));
                         user.setSyllabusResult(s[2]);
-                        user.save();
-                        //更新DataCache
-                        DataCacher.getInstance().setCurrentYear(s[0]);
-                        DataCacher.getInstance().setCurrentSemester(Integer.valueOf(s[1]));
-                        DataCacher.getInstance().setCurrentUser(user);
-                        L.d("成功设置"+s[0]+s[1]+"为默认课表");
+                        user.saveAndUpdateCache();
+                        L.d("成功设置" + s[0] + s[1] + "为默认课表");
                     }
                 });
     }
 
-    void showImportDialog(){
-        View item = LayoutInflater.from(MainActivity.this).inflate(R.layout.item_year_semester_selector,null);
-        WheelCurvedPicker yearPicker = (WheelCurvedPicker) item.findViewById(R.id.year_selector);
-        RadioGroup semesterPicker = (RadioGroup) item.findViewById(R.id.semester_selector);
-        final int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        final List<String> yearData = new ArrayList<String>();
-        for (int i = 0; i < 5; i++){
-            yearData.add((currentYear-i)+"-"+(currentYear-i+1)+"学年");
+    void showAddLessonDialog(){
+        Boolean errorFlag = false;
+        String errorMsg = "";
+        if(!ProjectUtil.isTeacher(DataCacher.getInstance().getIdentify())){
+            errorFlag = true;
+            errorMsg = "你不是教师用户，没有该功能！";
+        } else if("".equals(DataCacher.getInstance().getShowingYear()) || 0 == DataCacher.getInstance().getShowingSemester()){
+
+            SemesterSelector selector = new SemesterSelector(MainActivity.this,"请先设置当前学期","确定");
+            selector.setOnSelectedListener(new SemesterSelector.OnSelectedListener() {
+                @Override
+                public void onSelected(String selectedYear, int selectedSemester) {
+                    L.d("seletor -> "+selectedYear+":"+selectedSemester);
+                    DataCacher.getInstance().setShowingYear(selectedYear);
+                    DataCacher.getInstance().setShowingSemester(selectedSemester);
+                    mTxtToolbarTitle.setText(selectedYear  + convertSemester2Str(selectedSemester));
+                }
+            });
+            selector.show();
+
+        }
+        if(errorFlag){
+            final MaterialDialog dialog = new MaterialDialog(MainActivity.this);
+            dialog.setTitle("Error")
+                    .setMessage(errorMsg)
+                    .setPositiveButton("返回", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setCanceledOnTouchOutside(true)
+                    .show();
         }
 
-        final ImportDialogEvent event = new ImportDialogEvent();
 
-        yearPicker.setData(yearData);
-        yearPicker.setWheelDecor(false, new AbstractWheelDecor() {
+
+        L.d("showing ->" + DataCacher.getInstance().getShowingYear() + DataCacher.getInstance().getShowingSemester() +
+                ";current ->" + DataCacher.getInstance().getCurrentYear() + DataCacher.getInstance().getCurrentSemester());
+    }
+
+    void showImportDialog(){
+        SemesterSelector selector = new SemesterSelector(MainActivity.this,"导入课表","导入");
+        selector.setOnSelectedListener(new SemesterSelector.OnSelectedListener() {
             @Override
-            public void drawDecor(Canvas canvas, Rect rectLast, Rect rectNext, Paint paint) {
-                canvas.drawColor(0x8881d4fa);
+            public void onSelected(String seletedYear, int selectedSemester) {
+                ImportDialogEvent event = new ImportDialogEvent();
+                event.setSelectYear(seletedYear);
+                event.setSelectSemester(selectedSemester);
+                EventBus.getDefault().post(event);
             }
         });
-
-        yearPicker.setOnWheelChangeListener(new AbstractWheelPicker.OnWheelChangeListener() {
-            @Override
-            public void onWheelScrolling(float deltaX, float deltaY) {
-
-
-            }
-
-            @Override
-            public void onWheelSelected(int index, String data) {
-                event.setSelectYear(String.valueOf(currentYear - yearData.indexOf(data)));
-                L.d(data + "-->select");
-            }
-
-            @Override
-            public void onWheelScrollStateChanged(int state) {
-
-            }
-        });
-
-        semesterPicker.check(R.id.autumn_semester);
-        semesterPicker.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                int index = -1;
-                switch (checkedId){
-                    case R.id.autumn_semester:
-                        index = 1;
-                        break;
-                    case R.id.spring_semester:
-                        index = 2;
-                        break;
-                    case R.id.summer_semester:
-                        index = 3;
-                        break;
-                }
-                event.setSelectSemester(index);
-                L.d(checkedId + "-->checked");
-
-            }
-        });
-
-        final MaterialDialog dialog = new MaterialDialog(MainActivity.this);
-
-        dialog.setTitle(getString(R.string.import_selector_dialog_title))
-                .setContentView(item)
-                .setPositiveButton("导入", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        EventBus.getDefault().post(event);
-                        dialog.dismiss();
-                    }
-                })
-                .setCanceledOnTouchOutside(true)
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        mFab.show(true);
-                    }
-                })
-                .show();
-
+        selector.show();
     }
 
     private void cacheData() {
@@ -418,7 +422,7 @@ public class MainActivity extends AppCompatActivity{
                 .subscribe(new Action1<AppInfo>() {
                     @Override
                     public void call(AppInfo appInfo) {
-                        if (appInfo != null){
+                        if (appInfo != null) {
                             DataCacher.getInstance().setCurrentYear(appInfo.getCurrentUser().getCurrentYear());
                             DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentUser().getCurrentSemester());
                             DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
@@ -462,6 +466,7 @@ public class MainActivity extends AppCompatActivity{
                             DataCacher.getInstance().setShowingYear(selectedYear);
                             DataCacher.getInstance().setShowingSemester(selectedSemester);
                             DataCacher.getInstance().setShowingSyllabus(syllabusResult.toJson());
+                            mTxtToolbarTitle.setText(selectedYear  + convertSemester2Str(selectedSemester));
                         } else {
                             mSnackbar = Snackbar.make(mSnackbarContanier.getRootView(),"获取课表失败",Snackbar.LENGTH_SHORT);
                         }
@@ -572,5 +577,32 @@ public class MainActivity extends AppCompatActivity{
             showBottomSheet();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    //some util
+    private String convertSemester2Str(int semester){
+        if (semester == 1){
+            return "秋";
+        }else if (semester == 2){
+            return "春";
+        }else if(semester == 3){
+            return "夏";
+        }
+
+        return "";
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(this.isFinishing()){
+            DataCacher.getInstance().free();
+        }
     }
 }

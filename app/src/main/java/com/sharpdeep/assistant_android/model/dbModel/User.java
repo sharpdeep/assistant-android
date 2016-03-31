@@ -5,6 +5,7 @@ import android.content.Context;
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
 import com.orm.dsl.Unique;
+import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 import com.sharpdeep.assistant_android.util.L;
 
@@ -34,8 +35,8 @@ public class User extends SugarRecord{
     private String identify = "";
     private String token = "";
     private long authTime = 0l;
-    private String currentYear;
-    private int currentSemester;
+    private String currentYear = "";
+    private int currentSemester = 0;
     private String currentSyllabus;
 
     @Ignore
@@ -115,4 +116,11 @@ public class User extends SugarRecord{
         return SyllabusResult.fromJson(this.currentSyllabus);
     }
 
+    public void saveAndUpdateCache() {
+        this.save();
+        //更新DataCache
+        DataCacher.getInstance().setCurrentYear(this.currentYear);
+        DataCacher.getInstance().setCurrentSemester(this.currentSemester);
+        DataCacher.getInstance().setCurrentUser(this);
+    }
 }

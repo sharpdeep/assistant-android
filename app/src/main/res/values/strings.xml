@@ -9,6 +9,8 @@
     <string name="API_version">v1</string>
     <string name="import_selector_dialog_title">导入课表</string>
 
+    <string name="toolbar_title_main">未知学期</string>
+
     <string name="base_url">http://192.168.1.103:5000</string>
 
     <string name="home_page">首页</string>
@@ -23,6 +25,8 @@
     <string name="lesson_homepage_page2">笔记区</string>
     <string name="lesson_homepage_page3">作业区</string>
 
-    <string name="bottom_sheet_01">设置当前课表为默认</string>
-    <string name="bottom_sheet_02">待定功能</string>
+    <string name="bottom_sheet_01">导入课表</string>
+    <string name="bottom_sheet_02">设置课表为默认课表</string>
+    <string name="bottom_sheet_03">清除默认课表</string>
+
 </resources>

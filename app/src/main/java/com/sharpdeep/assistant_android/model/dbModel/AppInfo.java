@@ -27,6 +27,7 @@ public class AppInfo extends SugarRecord {
 
     public void logout(){
         this.currentUser = null;
+        this.save();
     }
 
 }

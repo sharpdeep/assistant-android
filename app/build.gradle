@@ -57,5 +57,4 @@ dependencies {
     }
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.3'
-    compile 'com.getbase:floatingactionbutton:1.10.1'
 }

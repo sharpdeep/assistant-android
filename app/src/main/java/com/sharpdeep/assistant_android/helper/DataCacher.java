@@ -9,12 +9,12 @@ public class DataCacher {
     private static DataCacher cacher = new DataCacher();
     private String token = "";
     private String currentYear = "";
-    private int currentSemester = -1;
+    private int currentSemester = 0;
     private long authTime = -1;
     private String identify = "";
     private User currentUser;
     private String showingYear = "";
-    private int showingSemester = -1;
+    private int showingSemester = 0;
     private String showingSyllabus = "";
 
     private DataCacher(){
@@ -95,5 +95,17 @@ public class DataCacher {
 
     public void setShowingSyllabus(String showingSyllabus) {
         this.showingSyllabus = showingSyllabus;
+    }
+
+    public void logout(){
+        this.showingYear = "";
+        this.showingSemester = 0;
+        this.showingSyllabus = "";
+    }
+
+    public void free(){
+        cacher.setShowingYear("");
+        cacher.setShowingSemester(0);
+        cacher.setShowingSyllabus("");
     }
 }
