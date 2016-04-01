@@ -58,4 +58,5 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.3'
     compile 'com.nightonke:boommenu:1.0.3'
+    compile 'com.victor:lib:1.0.4'
 }

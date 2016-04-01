@@ -31,16 +31,23 @@ import com.sharpdeep.assistant_android.model.resultModel.Schedule;
 import com.sharpdeep.assistant_android.model.resultModel.Student;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 import com.sharpdeep.assistant_android.util.L;
+import com.sharpdeep.assistant_android.view.AlertDialog;
+import com.sharpdeep.assistant_android.view.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.drakeet.materialdialog.MaterialDialog;
 import retrofit.Retrofit;
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -67,7 +74,7 @@ public class StudentListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_lesson_studentlist,container,false);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         setupStudenListView(view);
 
         ((LessonHomePageActivity)getContext()).setOnWindowFocusChangedListener(new WindowFocusChangedListener() {
@@ -125,9 +132,9 @@ public class StudentListFragment extends Fragment {
                 subBtnDrawables, // The drawables of images of sub buttons. Can not be null.
                 subBtnTexts,     // The texts of sub buttons, ok to be null.
                 subBtnColors,    // The colors of sub buttons, including pressed-state and normal-state.
-                ButtonType.HAM,     // The button type.
+                ButtonType.CIRCLE,     // The button type.
                 BoomType.PARABOLA,  // The boom type.
-                PlaceType.HAM_2_1,  // The place type.
+                PlaceType.CIRCLE_2_1,  // The place type.
                 null,               // Ease type to move the sub buttons when showing.
                 null,               // Ease type to scale the sub buttons when showing.
                 null,               // Ease type to rotate the sub buttons when showing.
@@ -154,6 +161,7 @@ public class StudentListFragment extends Fragment {
         });
         mBMBInit = true;
     }
+
 
     public void getStudentListThenUpdate(final View view) {
         Retrofit retrofit = RetrofitHelper.getRetrofit(getContext());
@@ -186,26 +194,30 @@ public class StudentListFragment extends Fragment {
     //签到
     private void SignIn(){
         Retrofit retrofit = RetrofitHelper.getRetrofit(getContext());
-        retrofit.create(AssistantService.class)
-                .SignIn(DataCacher.getInstance().getToken(),"00000","123","mac")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<BaseResult>() {
-                    @Override
-                    public void onCompleted() {
 
-                    }
+        LoadingDialog dialog = new LoadingDialog(getContext());
+        dialog.setDismissObservable(
+                retrofit.create(AssistantService.class)
+                        .SignIn(DataCacher.getInstance().getToken(), getLessonId(), getDeviceId(), getWifiMac())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map(new Func1<BaseResult, Boolean>() {
+                            @Override
+                            public Boolean call(BaseResult baseResult) {
+                                L.d(baseResult.getMsg());
+                                new AlertDialog(getContext()).alert(baseResult.getMsg());
+                                return true;
+                            }
+                        })
+        );
+        dialog.setErrorHandler(new LoadingDialog.ErrorHandler() {
+            @Override
+            public void handler() {
+                new AlertDialog(getContext()).alert("服务器或网络出了点问题");
+            }
+        });
 
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(BaseResult baseResult) {
-                        L.d(baseResult.getMsg());
-                    }
-                });
+        dialog.show("正在签到");
     }
 
     private class RecyclerViewAdapter extends RecyclerView.Adapter<StudentViewHolder> {
@@ -287,4 +299,15 @@ public class StudentListFragment extends Fragment {
         }
     }
 
+    private String getLessonId(){
+        return this.mLessonId;
+    }
+
+    private String getDeviceId(){
+        return "123";
+    }
+
+    private String getWifiMac(){
+        return "mac";
+    }
 }
