@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:htext="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <com.aigestudio.wheelpicker.widget.curved.WheelDatePicker
+        android:id="@+id/askleave_datepicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+    </com.aigestudio.wheelpicker.widget.curved.WheelDatePicker>
+
+    <com.hanks.htextview.HTextView
+        android:id="@+id/askleave_date_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textColor="@color/md_black_1000"
+        android:textSize="20sp"
+        android:text="请假时间"
+        htext:animateType="anvil"/>
+
+    <RadioGroup
+        android:id="@+id/leave_type_selector"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:gravity="center">
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/other_leave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/other_leave_type"/>
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/sick_leave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/sick_leave_type"/>
+        <android.support.v7.widget.AppCompatRadioButton
+            android:id="@+id/affair_leave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/affair_leave_type"/>
+    </RadioGroup>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/askleave_reason_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="5"
+            android:textColor="@color/md_black_1000"
+            android:hint="请假原因"/>
+    </android.support.design.widget.TextInputLayout>
+
+</LinearLayout>

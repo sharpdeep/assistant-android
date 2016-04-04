@@ -1,5 +1,6 @@
 package com.sharpdeep.assistant_android.activity.fragment;
 
+import android.app.DatePickerDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -32,6 +33,7 @@ import com.sharpdeep.assistant_android.model.resultModel.Student;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.view.AlertDialog;
+import com.sharpdeep.assistant_android.view.AskLeaveDialog;
 import com.sharpdeep.assistant_android.view.LoadingDialog;
 
 import java.util.ArrayList;
@@ -151,10 +153,11 @@ public class StudentListFragment extends Fragment {
                 switch (buttonIndex){
                     case 0:
                         L.d("签到");
-                        SignIn();
+                        signin();
                         break;
                     case 1:
                         L.d("请假");
+                        askLeave();
                         break;
                 }
             }
@@ -192,13 +195,13 @@ public class StudentListFragment extends Fragment {
     }
 
     //签到
-    private void SignIn(){
+    private void signin(){
         Retrofit retrofit = RetrofitHelper.getRetrofit(getContext());
 
         LoadingDialog dialog = new LoadingDialog(getContext());
         dialog.setDismissObservable(
                 retrofit.create(AssistantService.class)
-                        .SignIn(DataCacher.getInstance().getToken(), getLessonId(), getDeviceId(), getWifiMac())
+                        .signin(DataCacher.getInstance().getToken(), getLessonId(), getDeviceId(), getWifiMac())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .map(new Func1<BaseResult, Boolean>() {
@@ -218,6 +221,44 @@ public class StudentListFragment extends Fragment {
         });
 
         dialog.show("正在签到");
+    }
+
+    //请假
+    private void askLeave(){
+        final Retrofit retrofit = RetrofitHelper.getRetrofit(getContext());
+
+        AskLeaveDialog askLeaveDialog = new AskLeaveDialog(getContext());
+
+        final LoadingDialog dialog = new LoadingDialog(getContext());
+        dialog.setErrorHandler(new LoadingDialog.ErrorHandler() {
+            @Override
+            public void handler() {
+                new AlertDialog(getContext()).alert("服务器或者网络出了点问题");
+            }
+        });
+
+        askLeaveDialog.setOnLeaveAskCompleteListener(new AskLeaveDialog.OnLeaveAskCompleteListener() {
+            @Override
+            public void onLeaveAskComplete(int leave_type, String leave_date, String leave_reason) {
+                L.d(leave_date);
+                dialog.setDismissObservable(
+                        retrofit.create(AssistantService.class)
+                .askLeave(DataCacher.getInstance().getToken(),getLessonId(),leave_type,leave_date,leave_reason)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Func1<BaseResult, Boolean>() {
+                    @Override
+                    public Boolean call(BaseResult baseResult) {
+                        L.d(baseResult.getMsg());
+                        new AlertDialog(getContext()).alert(baseResult.getMsg());
+                        return true;
+                    }
+                }));
+                dialog.show("正在申请请假...");
+            }
+        });
+        askLeaveDialog.show();
+
     }
 
     private class RecyclerViewAdapter extends RecyclerView.Adapter<StudentViewHolder> {

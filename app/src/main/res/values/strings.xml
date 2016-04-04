@@ -30,4 +30,7 @@
     <string name="bottom_sheet_02">设置课表为默认课表</string>
     <string name="bottom_sheet_03">清除默认课表</string>
 
+    <string name="other_leave_type">其他</string>
+    <string name="sick_leave_type">病假</string>
+    <string name="affair_leave_type">事假</string>
 </resources>

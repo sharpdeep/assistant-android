@@ -33,5 +33,9 @@ public interface AssistantService {
 
     @FormUrlEncoded()
     @POST(prefix+"/sign")
-    Observable<BaseResult> SignIn(@Header("Authorization") String token,@Field("classid") String classid, @Field("device_id") String device_id,@Field("mac") String mac);
+    Observable<BaseResult> signin(@Header("Authorization") String token,@Field("classid") String classid, @Field("device_id") String device_id,@Field("mac") String mac);
+
+    @FormUrlEncoded()
+    @POST(prefix+"/leave")
+    Observable<BaseResult> askLeave(@Header("Authorization") String token,@Field("classid") String classid,@Field("leave_type") int leave_type, @Field("leave_date") String leave_date, @Field("leave_reason") String leave_reason);
 }
