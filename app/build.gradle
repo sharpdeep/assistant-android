@@ -27,37 +27,44 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'com.android.support:design:23.0.0'
+    // retrofit
+    // Because RxAndroid releases are few and far between, it is recommended you also
+    // explicitly depend on RxJava's latest version for bug fixes and new features.
+    // rxjava extension with retrofit
+    // gson
+    // gson convertor with retrofit
+    // filter request and response log with okHttpClient
+    //materialish-progress
+    compile('com.mikepenz:materialdrawer:4.6.4@aar') {
+        transitive = true
+    }
+    compile('com.github.florent37:materialviewpager:1.1.3@aar') {
+        transitive = true
+    }
+    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:design:23.2.1'
     compile 'com.github.tianzhijiexian:logger:1.1.3'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.github.satyan:sugar:1.4'
-    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2' // retrofit
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'io.reactivex:rxandroid:1.1.0'
-    // Because RxAndroid releases are few and far between, it is recommended you also
-    // explicitly depend on RxJava's latest version for bug fixes and new features.
     compile 'io.reactivex:rxjava:1.1.0'
-    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2' // rxjava extension with retrofit
-    compile 'com.google.code.gson:gson:2.5' // gson
-    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2' // gson convertor with retrofit
-    compile 'com.squareup.okhttp:logging-interceptor:2.7.0' // filter request and response log with okHttpClient
+    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
+    compile 'com.google.code.gson:gson:2.5'
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+    compile 'com.squareup.okhttp:logging-interceptor:2.7.0'
     compile 'com.github.qiujuer:genius:2.4.0'
-    compile 'com.pnikosis:materialish-progress:1.7' //materialish-progress
+    compile 'com.pnikosis:materialish-progress:1.7'
     compile 'it.neokree:MaterialTabs:0.11'
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.melnykov:floatingactionbutton:1.3.0'
     compile 'me.drakeet.materialdialog:library:1.2.8'
-    compile "cn.aigestudio.wheelpicker:WheelPicker:1.0.3"
-    compile('com.mikepenz:materialdrawer:4.6.4@aar') {
-        transitive = true
-    }
+    compile 'cn.aigestudio.wheelpicker:WheelPicker:1.0.3'
     compile 'com.skyfishjy.ripplebackground:library:1.0.1'
-    compile ('com.github.florent37:materialviewpager:1.1.3@aar'){
-        transitive = true
-    }
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.3'
     compile 'com.nightonke:boommenu:1.0.3'
     compile 'com.victor:lib:1.0.4'
     compile 'hanks.xyz:htextview-library:0.1.3'
+    compile 'com.android.support:support-v4:23.2.1'
 }

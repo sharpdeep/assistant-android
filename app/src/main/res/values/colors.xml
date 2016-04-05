@@ -307,7 +307,8 @@
     <color name="brown_900">#3e2723</color>
 
     <!-- GREY -->
-    <color name="grey_0">#ffffff</color> <!-- Grey 1000 (White) -->
+    <color name="grey_0">#ffffff</color>
+    <!-- Grey 1000 (White) -->
     <color name="grey_50">#fafafa</color>
     <color name="grey_100">#f5f5f5</color>
     <color name="grey_200">#eeeeee</color>
@@ -318,7 +319,8 @@
     <color name="grey_700">#616161</color>
     <color name="grey_800">#424242</color>
     <color name="grey_900">#212121</color>
-    <color name="grey_1000">#000000</color> <!-- Grey 1000 (Black) -->
+    <color name="grey_1000">#000000</color>
+    <!-- Grey 1000 (Black) -->
 
     <!-- BLUE GREY -->
     <color name="blue_grey_50">#eceff1</color>
@@ -331,9 +333,6 @@
     <color name="blue_grey_700">#455a64</color>
     <color name="blue_grey_800">#37474f</color>
     <color name="blue_grey_900">#263238</color>
-
-
-
 
 
     <color name="background_material_dark">#ff212121</color>
@@ -356,8 +355,10 @@
     <color name="dim_foreground_disabled_material_dark">#80bebebe</color>
     <color name="dim_foreground_disabled_material_light">#80323232</color>
 
-    <color name="hint_foreground_material_dark">@color/bright_foreground_disabled_material_dark</color>
-    <color name="hint_foreground_material_light">@color/bright_foreground_disabled_material_light</color>
+    <color name="hint_foreground_material_dark">@color/bright_foreground_disabled_material_dark
+    </color>
+    <color name="hint_foreground_material_light">@color/bright_foreground_disabled_material_light
+    </color>
     <!-- TODO: This is 40% alpha on the default accent color. -->
     <color name="highlighted_text_material_dark">#6640c4ff</color>
     <!-- TODO: This is 40% alpha on the default accent color. -->
@@ -476,9 +477,15 @@
     <!-- Time picker defaults when no theme is set -->
     <eat-comment />
 
-    <color name="timepicker_default_background_material">@color/primary_text_default_material_light</color>
-    <color name="timepicker_default_disabled_color_material">@color/bright_foreground_disabled_material_dark</color>
-    <color name="timepicker_default_ampm_selected_background_color_material">@color/material_light_blue_A200</color>
+    <color name="timepicker_default_background_material">
+        @color/primary_text_default_material_light
+    </color>
+    <color name="timepicker_default_disabled_color_material">
+        @color/bright_foreground_disabled_material_dark
+    </color>
+    <color name="timepicker_default_ampm_selected_background_color_material">
+        @color/material_light_blue_A200
+    </color>
     <color name="timepicker_default_selector_color_material">@color/material_light_blue_A200</color>
 
     <color name="list_item_title">#ffffffff</color>
@@ -490,4 +497,6 @@
     <color name="counter_text_color">#c5c4c4</color>
 
     <color name="material_white">#f9f9f9</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

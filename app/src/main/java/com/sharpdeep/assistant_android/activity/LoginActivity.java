@@ -65,45 +65,9 @@ public class LoginActivity extends AppCompatActivity {
         setSupportActionBar(mToolBar);
         Genius.initialize(getApplication());
 
-        getAuthTimeObservable().subscribe(new Action1<Long>() {
-            @Override
-            public void call(Long aLong) {
-                long now = new Date().getTime()/1000;
-                if (now - aLong <= Constant.EXPRIED){//有效
-                    startActivityAndFinsh(MainActivity.class);
-                }else{
-                    init();
-                }
-            }
-        });
-        //判断网络连接情况(todo)
-    }
-
-    private void init(){
-        L.init(); //logger init
         initAutoComplete();
     }
 
-    private Observable<Long> getAuthTimeObservable(){
-        long now = new Date().getTime()/1000;
-        return Observable.create(new Observable.OnSubscribe<Long>() {
-            @Override
-            public void call(Subscriber<? super Long> subscriber) {
-                List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
-                if(infoList.size() > 0){
-                    User cUser = infoList.get(0).getCurrentUser();
-                    if (cUser == null) {
-                        subscriber.onNext(0l);
-                    }else{
-                        subscriber.onNext(cUser.getAuthTime());
-                        DataCacher.getInstance().setIdentify(cUser.getIdentify());
-                    }
-                }else if(infoList.size() == 0){
-                    subscriber.onNext(0l);
-                }
-            }
-        }).subscribeOn(Schedulers.io());
-    }
 
     @OnClick(R.id.sign_in_button)
     void signIn(){
@@ -227,7 +191,7 @@ public class LoginActivity extends AppCompatActivity {
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     if (position != -1){
                                         mPasswdView.setText(users.get(position).getPassword());
-                                        L.d(users.get(position).getPassword());
+                                        L.d(position + users.get(position).getPassword());
                                     }
                                 }
                             });
