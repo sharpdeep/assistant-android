@@ -28,6 +28,7 @@ import net.qiujuer.genius.Genius;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
@@ -169,9 +170,11 @@ public class LoginActivity extends AppCompatActivity {
                     public void call(final List<User> users) {
                         if (users.size() > 0) { //数据库存在缓存用户
                             List<String> strUserList = new ArrayList<String>();
+                            final HashMap<String,String> userMap = new HashMap<String, String>();
                             String[] strUsers;
                             for (User u : users) {
                                 strUserList.add(u.getUsername());
+                                userMap.put(u.getUsername(),u.getPassword());
                             }
                             strUsers = strUserList.toArray(new String[users.size()]);
                             ArrayAdapter adapter = new ArrayAdapter<String>(LoginActivity.this, android.R.layout.simple_dropdown_item_1line, strUsers);
@@ -190,8 +193,8 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     if (position != -1){
-                                        mPasswdView.setText(users.get(position).getPassword());
-                                        L.d(position + users.get(position).getPassword());
+                                        mPasswdView.setText(userMap.get(mAccountView.getText().toString()));
+                                        L.d(userMap.get(mAccountView.getText().toString()));
                                     }
                                 }
                             });
