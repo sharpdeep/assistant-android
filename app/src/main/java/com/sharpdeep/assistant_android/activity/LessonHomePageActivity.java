@@ -6,32 +6,22 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
 import com.sharpdeep.assistant_android.R;
-import com.sharpdeep.assistant_android.activity.fragment.LessonDiscussionFragment;
-import com.sharpdeep.assistant_android.activity.fragment.StudentListFragment;
-import com.sharpdeep.assistant_android.api.AssistantService;
+import com.sharpdeep.assistant_android.activity.fragment.lessonpage.LessonDiscussionFragment;
+import com.sharpdeep.assistant_android.activity.fragment.lessonpage.StudentListFragment;
 import com.sharpdeep.assistant_android.helper.DataCacher;
-import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.listener.WindowFocusChangedListener;
 import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.model.resultModel.Student;
-import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
-import com.sharpdeep.assistant_android.util.L;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import de.greenrobot.event.EventBus;
-import retrofit.Retrofit;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by bear on 16-1-22.

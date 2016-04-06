@@ -13,6 +13,7 @@ import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
 import com.sharpdeep.assistant_android.model.dbModel.User;
+import com.sharpdeep.assistant_android.model.resultModel.Schedule;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
 
@@ -26,6 +27,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -100,27 +102,37 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_welcome);
-        L.init();
         ButterKnife.bind(this);
 
         mVisible = true;
         mContentView.setBackgroundResource(R.drawable.welcome);
+
+        L.init();
 
         authCheck();
     }
 
     private void authCheck() {
 
-        getAuthTimeObservable().observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Long>() {
+        getAuthTimeObservable()
+                .observeOn(Schedulers.io())
+                .map(new Func1<Long, Class>() {
                     @Override
-                    public void call(Long aLong) {
+                    public Class call(Long aLong) {
                         long now = new Date().getTime() / 1000;
                         if (now - aLong <= Constant.EXPRIED) {//有效
-                            startActivityAndFinsh(MainActivity.class);
+                            return (cacheData() ? MainActivity.class : LoginActivity.class);
                         } else {
-                            startActivityAndFinsh(LoginActivity.class);
+                            return LoginActivity.class;
                         }
+                    }
+                })
+                .delay(1,TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Class>() {
+                    @Override
+                    public void call(Class aClass) {
+                        startActivityAndFinsh(aClass);
                     }
                 });
         //判断网络连接情况(todo)
@@ -141,7 +153,6 @@ public class WelcomeActivity extends AppCompatActivity {
                         subscriber.onNext(0l);
                     } else {
                         subscriber.onNext(cUser.getAuthTime());
-//                        DataCacher.getInstance().setIdentify(cUser.getIdentify());
                     }
                 } else if (infoList.size() == 0) {
                     subscriber.onNext(0l);
@@ -149,6 +160,22 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         }).subscribeOn(Schedulers.io());
     }
+
+    private boolean cacheData(){
+        List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
+        if (infoList.size() > 0){
+            AppInfo appInfo = infoList.get(0);
+            DataCacher.getInstance().setCurrentYear(appInfo.getCurrentUser().getCurrentYear());
+            DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentUser().getCurrentSemester());
+            DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
+            DataCacher.getInstance().setToken(appInfo.getCurrentUser().getToken());
+            DataCacher.getInstance().setCurrentUser(appInfo.getCurrentUser());
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

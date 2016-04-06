@@ -3,6 +3,7 @@ package com.sharpdeep.assistant_android.activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.BadgeStyle;
+import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
@@ -51,11 +54,13 @@ import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
 import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.model.eventModel.ImportDialogEvent;
 import com.sharpdeep.assistant_android.model.eventModel.LessonGridClickEvent;
+import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
 import com.sharpdeep.assistant_android.model.resultModel.Lesson;
 import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.util.ProjectUtil;
+import com.sharpdeep.assistant_android.util.ToastUtil;
 import com.sharpdeep.assistant_android.view.BottomSheetDialog;
 import com.sharpdeep.assistant_android.view.SemesterSelector;
 import com.sharpdeep.assistant_android.view.SyncHorizontalScrollView;
@@ -74,6 +79,7 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 import de.greenrobot.event.EventBus;
 import me.drakeet.materialdialog.MaterialDialog;
+import retrofit.Retrofit;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -108,15 +114,15 @@ public class MainActivity extends AppCompatActivity{
     Snackbar mSnackbar;
 
     private BottomSheetDialog mBottomSheetDialog;
+    private Drawer mDrawer;
+
+    private boolean mBackClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (DataCacher.getInstance().getIdentify().equals(User.IDENTIFY_STUDENT)){
-//            setContentView(R.layout.activity_main);
-//        }
+
         setContentView(R.layout.activity_main);
-        cacheData();
         init();
     }
 
@@ -168,26 +174,45 @@ public class MainActivity extends AppCompatActivity{
     private void setupDrawer(){
         PrimaryDrawerItem homeItem = new PrimaryDrawerItem()
                 .withName(R.string.home_page)
+                .withIdentifier(1)
                 .withIcon(R.drawable.ic_action_home)
                 .withSelectedIcon(R.drawable.ic_action_home_selected);
 
         PrimaryDrawerItem oaItem = new PrimaryDrawerItem()
                 .withName(R.string.oa_page)
+                .withIdentifier(2)
                 .withIcon(R.drawable.ic_oa)
                 .withSelectedIcon(R.drawable.ic_oa_selected);
 
+        PrimaryDrawerItem signlogItem = new PrimaryDrawerItem()
+                .withName(R.string.drawer_signlog)
+                .withIdentifier(3)
+                .withIcon(R.drawable.ic_action_signlog)
+                .withSelectedIcon(R.drawable.ic_action_signlog_selected)
+                .withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.md_blue_700));
+
+        PrimaryDrawerItem leavelogItem = new PrimaryDrawerItem()
+                .withName(R.string.drawer_leavelog)
+                .withIdentifier(4)
+                .withIcon(R.drawable.ic_action_leavelog)
+                .withSelectedIcon(R.drawable.ic_action_leavelog_selected)
+                .withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.md_blue_700));
+
         PrimaryDrawerItem settingItem = new PrimaryDrawerItem()
                 .withName(R.string.setting_page)
+                .withIdentifier(5)
                 .withIcon(R.drawable.ic_action_settings)
                 .withSelectedIcon(R.drawable.ic_action_settings_selected);
 
         PrimaryDrawerItem suggestionItem = new PrimaryDrawerItem()
                 .withName(R.string.suggestion_page)
+                .withIdentifier(6)
                 .withIcon(R.drawable.ic_suggestion)
                 .withSelectedIcon(R.drawable.ic_suggestion_selected);
 
         PrimaryDrawerItem exitItem = new PrimaryDrawerItem()
                 .withName(R.string.exit)
+                .withIdentifier(7)
                 .withIcon(R.drawable.ic_exit)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -222,11 +247,76 @@ public class MainActivity extends AppCompatActivity{
                         .withIcon(R.drawable.profile))
                 .build();
 
-        new DrawerBuilder().withActivity(MainActivity.this)
+        mDrawer = new DrawerBuilder().withActivity(MainActivity.this)
                 .withToolbar(mToolBar)
                 .withAccountHeader(accountHeader)
-                .addDrawerItems(homeItem, oaItem, new DividerDrawerItem(), settingItem, suggestionItem, new DividerDrawerItem(), exitItem)
+                .addDrawerItems(
+                        homeItem,
+                        oaItem,
+                        new DividerDrawerItem(),
+                        signlogItem,
+                        leavelogItem,
+                        new DividerDrawerItem(),
+                        settingItem,
+                        suggestionItem,
+                        new DividerDrawerItem(),
+                        exitItem
+                )
                 .build();
+        getStudentSignlogCount();
+        getStudentLeaveLogCount();
+    }
+
+    private void getStudentSignlogCount(){
+        RetrofitHelper.getRetrofit(MainActivity.this)
+                .create(AssistantService.class)
+                .getStudentSignlogCount(DataCacher.getInstance().getCurrentUser().getUsername(),"all")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<BaseResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d("获取学生签到数目时出错");
+                    }
+
+                    @Override
+                    public void onNext(BaseResult baseResult) {
+                        if (baseResult.isSuccess() && !baseResult.getMsg().equals("0")){
+                            mDrawer.updateBadge(3,new StringHolder(baseResult.getMsg()));
+                        }
+                    }
+                });
+    }
+
+    private void getStudentLeaveLogCount(){
+        RetrofitHelper.getRetrofit(MainActivity.this)
+                .create(AssistantService.class)
+                .getStudentLeavelogCount(DataCacher.getInstance().getCurrentUser().getUsername(),"all")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<BaseResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d("获取学生请假记录数目时出错");
+                    }
+
+                    @Override
+                    public void onNext(BaseResult baseResult) {
+                        if (baseResult.isSuccess() && !baseResult.getMsg().equals("0")){
+                            mDrawer.updateBadge(4,new StringHolder(baseResult.getMsg()));
+                        }
+                    }
+                });
     }
 
     //注销账号
@@ -284,7 +374,6 @@ public class MainActivity extends AppCompatActivity{
     @OnClick(R.id.fab)
     void onFabCilck(View view){
         mFab.hide(true);
-//        showImportDialog();
     }
 
     @OnLongClick(R.id.classGridLayout)
@@ -406,33 +495,6 @@ public class MainActivity extends AppCompatActivity{
         selector.show();
     }
 
-    private void cacheData() {
-        Observable.create(new Observable.OnSubscribe<AppInfo>() {
-            @Override
-            public void call(Subscriber<? super AppInfo> subscriber) {
-                List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
-                if (infoList.size() > 0) {
-                    subscriber.onNext(infoList.get(0));
-                } else {
-                    subscriber.onNext(null);
-                }
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<AppInfo>() {
-                    @Override
-                    public void call(AppInfo appInfo) {
-                        if (appInfo != null) {
-                            DataCacher.getInstance().setCurrentYear(appInfo.getCurrentUser().getCurrentYear());
-                            DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentUser().getCurrentSemester());
-                            DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
-                            DataCacher.getInstance().setToken(appInfo.getCurrentUser().getToken());
-                            DataCacher.getInstance().setCurrentUser(appInfo.getCurrentUser());
-                        }
-                    }
-                });
-    }
-
     //获取课表
     public void onEvent(ImportDialogEvent event){
         L.d("get " + event.getSelectYear() + " and " + event.getSelectSemester() + " from event");
@@ -451,7 +513,7 @@ public class MainActivity extends AppCompatActivity{
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(MainActivity.this,"服务器好像出了点问题，稍后再试",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "服务器好像出了点问题，稍后再试", Toast.LENGTH_SHORT).show();
                         L.d(e.toString());
                         e.printStackTrace();
                     }
@@ -460,15 +522,15 @@ public class MainActivity extends AppCompatActivity{
                     public void onNext(SyllabusResult syllabusResult) {
                         if (syllabusResult.isSuccess()) {
                             //显示课表(todo)
-                            mSnackbar = Snackbar.make(mSnackbarContanier.getRootView(),"成功获取课表",Snackbar.LENGTH_SHORT);
+                            mSnackbar = Snackbar.make(mSnackbarContanier.getRootView(), "成功获取课表", Snackbar.LENGTH_SHORT);
                             showSyllabus(syllabusResult);
                             //更新DataCache中的showing变量
                             DataCacher.getInstance().setShowingYear(selectedYear);
                             DataCacher.getInstance().setShowingSemester(selectedSemester);
                             DataCacher.getInstance().setShowingSyllabus(syllabusResult.toJson());
-                            mTxtToolbarTitle.setText(selectedYear  + convertSemester2Str(selectedSemester));
+                            mTxtToolbarTitle.setText(selectedYear + convertSemester2Str(selectedSemester));
                         } else {
-                            mSnackbar = Snackbar.make(mSnackbarContanier.getRootView(),"获取课表失败",Snackbar.LENGTH_SHORT);
+                            mSnackbar = Snackbar.make(mSnackbarContanier.getRootView(), "获取课表失败", Snackbar.LENGTH_SHORT);
                         }
                         mFab.hide();
                         mSnackbar.setCallback(new Snackbar.Callback() {
@@ -575,8 +637,28 @@ public class MainActivity extends AppCompatActivity{
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_MENU){
             showBottomSheet();
+        }else if (keyCode == KeyEvent.KEYCODE_BACK){
+            clickBackTwiceToExit();
+            return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private void clickBackTwiceToExit() {
+        if (!mBackClicked){
+            mBackClicked = true;
+            ToastUtil.show(MainActivity.this,"再按一次退出程序");
+            Observable.timer(2,TimeUnit.SECONDS)
+                    .subscribe(new Action1<Long>() {
+                        @Override
+                        public void call(Long aLong) {
+                            mBackClicked = false;
+                        }
+                    });
+        }else{
+            this.finish();
+            System.exit(0);
+        }
     }
 
     //some util
@@ -605,5 +687,4 @@ public class MainActivity extends AppCompatActivity{
             DataCacher.getInstance().free();
         }
     }
-
 }

@@ -29,14 +29,6 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <com.pnikosis.materialishprogress.ProgressWheel
-            android:id="@+id/progress_login"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:visibility="gone"
-            android:layout_gravity="center_horizontal|top"
-            wheel:matProg_barColor="#5588FF"
-            wheel:matProg_progressIndeterminate="true" />
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

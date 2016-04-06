@@ -13,6 +13,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.roger.psdloadingview.library.PsdLoadingView;
+import com.roger.psdloadingview.library.animate.EatAnimate;
+import com.roger.psdloadingview.library.animate.TranslationX2Animate;
+import com.roger.psdloadingview.library.animate.TranslationXAnimate;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.Constant;
@@ -49,13 +53,12 @@ public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.account)
     AutoCompleteTextView mAccountView;
     @Bind(R.id.txt_password)
-    EditText mPasswdView;
+    PsdLoadingView mPasswdView;
     @Bind(R.id.sign_in_button)
     Button mSignInBtn;
     @Bind(R.id.toolbar)
     Toolbar mToolBar;
-    @Bind(R.id.progress_login)
-    View mProgress;
+
     Boolean isAuth = false;
 
     @Override
@@ -67,13 +70,17 @@ public class LoginActivity extends AppCompatActivity {
         Genius.initialize(getApplication());
 
         initAutoComplete();
+
+        mPasswdView.init(new TranslationX2Animate());
     }
 
 
     @OnClick(R.id.sign_in_button)
     void signIn(){
+        mPasswdView.requestFocus();
+        mPasswdView.startLoading();
         final String username = mAccountView.getText().toString();
-        final String password = mPasswdView.getText().toString();
+        final String password = mPasswdView.getTextDuringLoading().toString();
         if (username.isEmpty()) {
             mAccountView.setError("请输入校园网账号！");
         } else if (password.isEmpty()) {
@@ -81,23 +88,21 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             final Retrofit retrofit = RetrofitHelper.getRetrofit(LoginActivity.this);
             retrofit.create(AssistantService.class)
-                    .authUser(username,password)
+                    .authUser(username, password)
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe(new Action0() { //开始网络操作前
                         @Override
                         public void call() {
                             mSignInBtn.setEnabled(false);
-                            mProgress.setVisibility(View.VISIBLE);
                         }
                     })
                     .subscribeOn(AndroidSchedulers.mainThread())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<AuthResult>() {
                         @Override
                         public void onCompleted() {
                             L.d("completed!");
                             mSignInBtn.setEnabled(true);
-                            mProgress.setVisibility(View.GONE);
                         }
 
                         @Override
@@ -112,8 +117,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (authResult.isSuccess()) { //成功了更新或者保存密码
                                 L.d("成功登陆");
                                 L.d("开始缓存数据...");
-                                //两次数据库操作可以转移到MainActivity后台执行(todo)
-                                //save user'data
+                                //save or update user'data
                                 int len = User.find(User.class, "username = ?", username).size();
                                 User user = null;
                                 if (len == 0) {//不存在
@@ -121,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                                     user = new User(username, password);
                                     user.setIdentify(authResult.getIdentify());
                                     user.setToken(authResult.getToken());
-                                    user.setAuthTime((new Date().getTime())/1000);
+                                    user.setAuthTime((new Date().getTime()) / 1000);
                                     user.save();
                                 } else if (len > 0) {//已存在，更新
                                     L.d("更新用户");
@@ -129,25 +133,23 @@ public class LoginActivity extends AppCompatActivity {
                                     user.setPassword(password);
                                     user.setIdentify(authResult.getIdentify());
                                     user.setToken(authResult.getToken());
-                                    user.setAuthTime((new Date().getTime())/1000);
+                                    user.setAuthTime((new Date().getTime()) / 1000);
                                     user.save();
                                 }
-                                DataCacher.getInstance().setIdentify(user.getIdentify());
                                 //set current user
                                 List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
                                 AppInfo info;
-                                if(infoList.size() == 0){//之前没有
+                                if (infoList.size() == 0) {//之前没有
                                     info = new AppInfo();
                                     info.setCurrentUser(user);
                                     info.save();
-                                }else if(infoList.size() > 0){
+                                } else if (infoList.size() > 0) {
                                     info = infoList.get(0);
                                     info.setCurrentUser(user);
                                     info.save();
                                 }
-                                DataCacher.getInstance().setCurrentUser(user);
                                 startActivityAndFinsh(MainActivity.class);
-                            }else{//登陆失败
+                            } else {//登陆失败
                                 Toast.makeText(LoginActivity.this, authResult.getMsg(), Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -204,27 +206,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onDestroy() {

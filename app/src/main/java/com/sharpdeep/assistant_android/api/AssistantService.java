@@ -38,4 +38,10 @@ public interface AssistantService {
     @FormUrlEncoded()
     @POST(prefix+"/leave")
     Observable<BaseResult> askLeave(@Header("Authorization") String token,@Field("classid") String classid,@Field("leave_type") int leave_type, @Field("leave_date") String leave_date, @Field("leave_reason") String leave_reason);
+
+    @GET(prefix+"/signlist/student/count/{username}/{date}")
+    Observable<BaseResult> getStudentSignlogCount(@Path("username") String username, @Path("date") String date);
+
+    @GET(prefix+"/leavelist/student/count/{username}/{date}")
+    Observable<BaseResult> getStudentLeavelogCount(@Path("username") String username, @Path("date") String date);
 }

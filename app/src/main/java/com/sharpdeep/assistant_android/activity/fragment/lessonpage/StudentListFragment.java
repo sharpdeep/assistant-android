@@ -1,6 +1,5 @@
-package com.sharpdeep.assistant_android.activity.fragment;
+package com.sharpdeep.assistant_android.activity.fragment.lessonpage;
 
-import android.app.DatePickerDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,7 +27,6 @@ import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.listener.WindowFocusChangedListener;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
-import com.sharpdeep.assistant_android.model.resultModel.Schedule;
 import com.sharpdeep.assistant_android.model.resultModel.Student;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 import com.sharpdeep.assistant_android.util.L;
@@ -38,17 +36,13 @@ import com.sharpdeep.assistant_android.view.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import me.drakeet.materialdialog.MaterialDialog;
 import retrofit.Retrofit;
-import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
