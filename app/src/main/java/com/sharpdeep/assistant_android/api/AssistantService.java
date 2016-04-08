@@ -5,6 +5,7 @@ import com.sharpdeep.assistant_android.model.resultModel.AuthResult;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
+import com.sharpdeep.assistant_android.model.resultModel.StudentSIgnlogResult;
 import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 
 import retrofit.http.Field;
@@ -44,4 +45,8 @@ public interface AssistantService {
 
     @GET(prefix+"/leavelist/student/count/{username}/{date}")
     Observable<BaseResult> getStudentLeavelogCount(@Path("username") String username, @Path("date") String date);
+
+    @GET(prefix+"/signlist/student/{username}/{date}")
+    Observable<StudentSIgnlogResult> getStudentSignlog(@Path("username") String username, @Path("date") String date);
+
 }

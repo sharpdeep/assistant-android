@@ -3,6 +3,8 @@
     xmlns:tool="http://schemas.android.com/tools"
     package="com.sharpdeep.assistant_android">
 
+    <uses-sdk tool:overrideLibrary="com.roger.psdloadingview.library" />
+
     <!-- 在SDCard中创建与删除文件权限 -->
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <!-- 往SDCard写入数据权限 -->
@@ -10,15 +12,13 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-sdk tool:overrideLibrary="com.roger.psdloadingview.library"></uses-sdk>
     <application
-        android:name="com.orm.SugarApp"
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".activity.WelcomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -30,20 +30,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.LessonHomePageActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
             android:name="DATABASE"
@@ -57,6 +55,8 @@
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.sharpdeep.assistant_android.model" />
+
+        <activity android:name=".activity.StudentSignlogActivity"></activity>
     </application>
 
 </manifest>

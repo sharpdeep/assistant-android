@@ -48,6 +48,7 @@ import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.helper.DataCacher;
+import com.sharpdeep.assistant_android.helper.DrawerHelper;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.helper.SyllabusFormater;
 import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
@@ -85,6 +86,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 /**
@@ -117,6 +119,7 @@ public class MainActivity extends AppCompatActivity{
     private Drawer mDrawer;
 
     private boolean mBackClicked = false;
+    private HashMap<Integer,Integer> mDrawerItemIdentify = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +127,7 @@ public class MainActivity extends AppCompatActivity{
 
         setContentView(R.layout.activity_main);
         init();
+
     }
 
     private void init() {
@@ -147,9 +151,6 @@ public class MainActivity extends AppCompatActivity{
         //检查默认学期是否有缓存课表
         showSyllabusIfHasCache();
 
-        setSupportActionBar(mToolBar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
         setupToolBar();
         //init DrawMenu
         setupDrawer();
@@ -157,6 +158,8 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void setupToolBar() {
+        setSupportActionBar(mToolBar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -172,155 +175,15 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void setupDrawer(){
-        PrimaryDrawerItem homeItem = new PrimaryDrawerItem()
-                .withName(R.string.home_page)
-                .withIdentifier(1)
-                .withIcon(R.drawable.ic_action_home)
-                .withSelectedIcon(R.drawable.ic_action_home_selected);
+        mDrawer = DrawerHelper.getHelper()
+                .build(MainActivity.this,true)
+                .updateBadge()
+                .getDrawer();
 
-        PrimaryDrawerItem oaItem = new PrimaryDrawerItem()
-                .withName(R.string.oa_page)
-                .withIdentifier(2)
-                .withIcon(R.drawable.ic_oa)
-                .withSelectedIcon(R.drawable.ic_oa_selected);
-
-        PrimaryDrawerItem signlogItem = new PrimaryDrawerItem()
-                .withName(R.string.drawer_signlog)
-                .withIdentifier(3)
-                .withIcon(R.drawable.ic_action_signlog)
-                .withSelectedIcon(R.drawable.ic_action_signlog_selected)
-                .withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.md_blue_700));
-
-        PrimaryDrawerItem leavelogItem = new PrimaryDrawerItem()
-                .withName(R.string.drawer_leavelog)
-                .withIdentifier(4)
-                .withIcon(R.drawable.ic_action_leavelog)
-                .withSelectedIcon(R.drawable.ic_action_leavelog_selected)
-                .withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.md_blue_700));
-
-        PrimaryDrawerItem settingItem = new PrimaryDrawerItem()
-                .withName(R.string.setting_page)
-                .withIdentifier(5)
-                .withIcon(R.drawable.ic_action_settings)
-                .withSelectedIcon(R.drawable.ic_action_settings_selected);
-
-        PrimaryDrawerItem suggestionItem = new PrimaryDrawerItem()
-                .withName(R.string.suggestion_page)
-                .withIdentifier(6)
-                .withIcon(R.drawable.ic_suggestion)
-                .withSelectedIcon(R.drawable.ic_suggestion_selected);
-
-        PrimaryDrawerItem exitItem = new PrimaryDrawerItem()
-                .withName(R.string.exit)
-                .withIdentifier(7)
-                .withIcon(R.drawable.ic_exit)
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        logout();
-                        return false;
-                    }
-                })
-                .withSelectedIcon(R.drawable.ic_exit_selected);
-
-        AccountHeader accountHeader = new AccountHeaderBuilder()
-                .withActivity(MainActivity.this)
-
-                .withHeaderBackground(R.drawable.header)
-                .withOnlyMainProfileImageVisible(true)
-                .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
-                    @Override
-                    public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
-                        //显示个人主页(todo)
-                        Toast.makeText(MainActivity.this,"onclick",Toast.LENGTH_SHORT).show();
-                        return false;//false 为 click后close
-                    }
-
-                    @Override
-                    public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
-                        Toast.makeText(MainActivity.this,"快别按了，我要窒息了！",Toast.LENGTH_SHORT).show();
-                        return true; //true为出发long click就不触发click
-                    }
-                })
-                .addProfiles(new ProfileDrawerItem()
-                        .withName(DataCacher.getInstance().getCurrentUser().getUsername())
-                        .withIcon(R.drawable.profile))
-                .build();
-
-        mDrawer = new DrawerBuilder().withActivity(MainActivity.this)
-                .withToolbar(mToolBar)
-                .withAccountHeader(accountHeader)
-                .addDrawerItems(
-                        homeItem,
-                        oaItem,
-                        new DividerDrawerItem(),
-                        signlogItem,
-                        leavelogItem,
-                        new DividerDrawerItem(),
-                        settingItem,
-                        suggestionItem,
-                        new DividerDrawerItem(),
-                        exitItem
-                )
-                .build();
-        getStudentSignlogCount();
-        getStudentLeaveLogCount();
-    }
-
-    private void getStudentSignlogCount(){
-        RetrofitHelper.getRetrofit(MainActivity.this)
-                .create(AssistantService.class)
-                .getStudentSignlogCount(DataCacher.getInstance().getCurrentUser().getUsername(),"all")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<BaseResult>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        L.d("获取学生签到数目时出错");
-                    }
-
-                    @Override
-                    public void onNext(BaseResult baseResult) {
-                        if (baseResult.isSuccess() && !baseResult.getMsg().equals("0")){
-                            mDrawer.updateBadge(3,new StringHolder(baseResult.getMsg()));
-                        }
-                    }
-                });
-    }
-
-    private void getStudentLeaveLogCount(){
-        RetrofitHelper.getRetrofit(MainActivity.this)
-                .create(AssistantService.class)
-                .getStudentLeavelogCount(DataCacher.getInstance().getCurrentUser().getUsername(),"all")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<BaseResult>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        L.d("获取学生请假记录数目时出错");
-                    }
-
-                    @Override
-                    public void onNext(BaseResult baseResult) {
-                        if (baseResult.isSuccess() && !baseResult.getMsg().equals("0")){
-                            mDrawer.updateBadge(4,new StringHolder(baseResult.getMsg()));
-                        }
-                    }
-                });
     }
 
     //注销账号
-    private void logout() {
+    public void logout() {
         //修改appInfo
         Observable.timer(1, TimeUnit.MICROSECONDS)
                 .observeOn(Schedulers.io())
@@ -638,6 +501,9 @@ public class MainActivity extends AppCompatActivity{
         if (keyCode == KeyEvent.KEYCODE_MENU){
             showBottomSheet();
         }else if (keyCode == KeyEvent.KEYCODE_BACK){
+            if (mDrawer!= null && mDrawer.isDrawerOpen()){
+                mDrawer.closeDrawer();
+            }
             clickBackTwiceToExit();
             return true;
         }
