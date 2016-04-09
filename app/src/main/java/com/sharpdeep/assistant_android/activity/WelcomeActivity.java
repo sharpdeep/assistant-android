@@ -121,7 +121,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     public Class call(Long aLong) {
                         long now = new Date().getTime() / 1000;
                         if (now - aLong <= Constant.EXPRIED) {//有效
-                            return (cacheData() ? MainActivity.class : LoginActivity.class);
+                            return (DataCacher.getInstance().cacheData() ? MainActivity.class : LoginActivity.class);
                         } else {
                             return LoginActivity.class;
                         }
@@ -161,20 +161,20 @@ public class WelcomeActivity extends AppCompatActivity {
         }).subscribeOn(Schedulers.io());
     }
 
-    private boolean cacheData(){
-        List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
-        if (infoList.size() > 0){
-            AppInfo appInfo = infoList.get(0);
-            DataCacher.getInstance().setCurrentYear(appInfo.getCurrentUser().getCurrentYear());
-            DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentUser().getCurrentSemester());
-            DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
-            DataCacher.getInstance().setToken(appInfo.getCurrentUser().getToken());
-            DataCacher.getInstance().setCurrentUser(appInfo.getCurrentUser());
-            return true;
-        }else{
-            return false;
-        }
-    }
+//    private boolean cacheData(){
+//        List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
+//        if (infoList.size() > 0){
+//            AppInfo appInfo = infoList.get(0);
+//            DataCacher.getInstance().setCurrentYear(appInfo.getCurrentUser().getCurrentYear());
+//            DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentUser().getCurrentSemester());
+//            DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
+//            DataCacher.getInstance().setToken(appInfo.getCurrentUser().getToken());
+//            DataCacher.getInstance().setCurrentUser(appInfo.getCurrentUser());
+//            return true;
+//        }else{
+//            return false;
+//        }
+//    }
 
 
     @Override

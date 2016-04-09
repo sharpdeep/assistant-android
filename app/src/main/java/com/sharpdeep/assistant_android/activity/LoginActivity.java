@@ -27,6 +27,7 @@ import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
 import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
+import com.sharpdeep.assistant_android.util.ToastUtil;
 
 import net.qiujuer.genius.Genius;
 
@@ -44,6 +45,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 
@@ -97,21 +99,10 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     })
                     .subscribeOn(AndroidSchedulers.mainThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<AuthResult>() {
+                    .observeOn(Schedulers.io())
+                    .map(new Func1<AuthResult, Boolean>() {
                         @Override
-                        public void onCompleted() {
-                            L.d("completed!");
-                            mSignInBtn.setEnabled(true);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            L.d("internet error!%s", e.toString());
-                        }
-
-                        @Override
-                        public void onNext(final AuthResult authResult) {
+                        public Boolean call(AuthResult authResult) {
                             L.d(authResult.getStatus() + "-->" + authResult.getMsg());
                             L.d(authResult.getIdentify() + " token is:" + authResult.getToken());
                             if (authResult.isSuccess()) { //成功了更新或者保存密码
@@ -148,9 +139,35 @@ public class LoginActivity extends AppCompatActivity {
                                     info.setCurrentUser(user);
                                     info.save();
                                 }
-                                startActivityAndFinsh(MainActivity.class);
+                                DataCacher.getInstance().cacheData();
+                                return true;
                             } else {//登陆失败
-                                Toast.makeText(LoginActivity.this, authResult.getMsg(), Toast.LENGTH_SHORT).show();
+                                ToastUtil.show(LoginActivity.this,authResult.getMsg());
+                                return false;
+                            }
+                        }
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<Boolean>() {
+                        @Override
+                        public void onCompleted() {
+                            mSignInBtn.setEnabled(true);
+                            mPasswdView.stopLoading();
+                            mPasswdView.setText("");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            mSignInBtn.setEnabled(true);
+                            mPasswdView.stopLoading();
+                            mPasswdView.setText("");
+                            ToastUtil.show(LoginActivity.this,"登陆失败,请检查网络设置");
+                        }
+
+                        @Override
+                        public void onNext(Boolean success) {
+                            if (success){
+                                startActivityAndFinsh(MainActivity.class);
                             }
                         }
                     });

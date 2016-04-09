@@ -1,6 +1,9 @@
 package com.sharpdeep.assistant_android.helper;
 
+import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
 import com.sharpdeep.assistant_android.model.dbModel.User;
+
+import java.util.List;
 
 /**
  * Created by bear on 16-1-15.
@@ -95,6 +98,21 @@ public class DataCacher {
 
     public void setShowingSyllabus(String showingSyllabus) {
         this.showingSyllabus = showingSyllabus;
+    }
+
+    public boolean cacheData(){
+        List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
+        if (infoList.size() > 0){
+            AppInfo appInfo = infoList.get(0);
+            DataCacher.getInstance().setCurrentYear(appInfo.getCurrentUser().getCurrentYear());
+            DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentUser().getCurrentSemester());
+            DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
+            DataCacher.getInstance().setToken(appInfo.getCurrentUser().getToken());
+            DataCacher.getInstance().setCurrentUser(appInfo.getCurrentUser());
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public void logout(){
