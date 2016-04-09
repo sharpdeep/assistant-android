@@ -4,6 +4,7 @@ package com.sharpdeep.assistant_android.api;
 import com.sharpdeep.assistant_android.model.resultModel.AuthResult;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
+import com.sharpdeep.assistant_android.model.resultModel.StudentLeavelogResult;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 import com.sharpdeep.assistant_android.model.resultModel.StudentSIgnlogResult;
 import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
@@ -49,4 +50,6 @@ public interface AssistantService {
     @GET(prefix+"/signlist/student/{username}/{date}")
     Observable<StudentSIgnlogResult> getStudentSignlog(@Path("username") String username, @Path("date") String date);
 
+    @GET(prefix+"/leavelist/student/{username}/{date}")
+    Observable<StudentLeavelogResult> getStudentLeavelog(@Path("username") String username, @Path("date") String date);
 }

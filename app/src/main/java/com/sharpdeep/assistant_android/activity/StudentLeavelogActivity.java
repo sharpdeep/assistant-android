@@ -1,24 +1,20 @@
 package com.sharpdeep.assistant_android.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ExpandableListView;
 
 import com.baoyz.widget.PullRefreshLayout;
-import com.mikepenz.materialdrawer.Drawer;
 import com.sharpdeep.assistant_android.R;
-import com.sharpdeep.assistant_android.adapter.StudentSignlogAdapter;
+import com.sharpdeep.assistant_android.adapter.StudentLeavelogAdapter;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.DataCacher;
-import com.sharpdeep.assistant_android.helper.DrawerHelper;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
-import com.sharpdeep.assistant_android.model.resultModel.StudentSIgnlogResult;
-import com.sharpdeep.assistant_android.model.resultModel.StudentSignlog;
+import com.sharpdeep.assistant_android.model.resultModel.StudentLeavelog;
+import com.sharpdeep.assistant_android.model.resultModel.StudentLeavelogResult;
 import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.util.ToastUtil;
-
-import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,35 +23,37 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class StudentSignlogActivity extends AppCompatActivity {
-
-    @Bind(R.id.pullrefresh_student_signlog)
+/**
+ * Created by bear on 16-4-9.
+ */
+public class StudentLeavelogActivity extends AppCompatActivity {
+    @Bind(R.id.pullrefresh_student_leavelog)
     PullRefreshLayout mRefreshControl;
-    @Bind(R.id.listview_signlog)
-    ExpandableListView mLvSinglog;
-    @Bind(R.id.toolbar_student_signlog)
+    @Bind(R.id.listview_leavelog)
+    ExpandableListView mLVLeavelog;
+    @Bind(R.id.toolbar_student_leavelog)
     Toolbar mToolbar;
 
-    private StudentSignlogAdapter mSignlogAdapter;
+    private StudentLeavelogAdapter mleavelogAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_student_signlog);
+        setContentView(R.layout.activity_student_leavelog);
         ButterKnife.bind(this);
 
         setupView();
 
-        getStudentSignlog();
+        getStudentLeavelog();
     }
 
     private void setupView() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mSignlogAdapter = new StudentSignlogAdapter(StudentSignlogActivity.this);
-        mLvSinglog.setAdapter(mSignlogAdapter);
-        mLvSinglog.setGroupIndicator(null);
+        mleavelogAdapter = new StudentLeavelogAdapter(StudentLeavelogActivity.this);
+        mLVLeavelog.setAdapter(mleavelogAdapter);
+        mLVLeavelog.setGroupIndicator(null);
 
         setupPullRefresh();
 
@@ -67,18 +65,18 @@ public class StudentSignlogActivity extends AppCompatActivity {
         mRefreshControl.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getStudentSignlog();
+                getStudentLeavelog();
             }
         });
     }
 
-    private void getStudentSignlog(){
-        Retrofit retrofit = RetrofitHelper.getRetrofit(this);
+    private void getStudentLeavelog(){
+        Retrofit retrofit = RetrofitHelper.getRetrofit(StudentLeavelogActivity.this);
         retrofit.create(AssistantService.class)
-                .getStudentSignlog(DataCacher.getInstance().getCurrentUser().getUsername(),"all")
+                .getStudentLeavelog(DataCacher.getInstance().getCurrentUser().getUsername(),"all")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<StudentSIgnlogResult>() {
+                .subscribe(new Subscriber<StudentLeavelogResult>() {
                     @Override
                     public void onCompleted() {
                         mRefreshControl.setRefreshing(false);
@@ -86,20 +84,19 @@ public class StudentSignlogActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        L.d("刷新学生签到记录时候出错"+e.toString());
+                        L.d("刷新学生签到记录时候出错" + e.toString());
                         e.printStackTrace();
-                        ToastUtil.show(StudentSignlogActivity.this, "网络可能出了点问题");
+                        ToastUtil.show(StudentLeavelogActivity.this, "网络可能出了点问题");
                         mRefreshControl.setRefreshing(false);
                     }
 
                     @Override
-                    public void onNext(StudentSIgnlogResult studentSIgnlogResult) {
-                        mSignlogAdapter.updateData(studentSIgnlogResult.getSignlog());
-                        for (int i = 0; i < mSignlogAdapter.getGroupCount(); i++){
-                            mLvSinglog.expandGroup(i);
+                    public void onNext(StudentLeavelogResult studentLeavelogResult) {
+                        mleavelogAdapter.updateData(studentLeavelogResult.getLeavelog());
+                        for (int i = 0; i < mleavelogAdapter.getGroupCount(); i++){
+                            mLVLeavelog.expandGroup(i);
                         }
                     }
                 });
     }
-
 }

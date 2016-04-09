@@ -2,6 +2,7 @@ package com.sharpdeep.assistant_android.helper;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.activity.MainActivity;
+import com.sharpdeep.assistant_android.activity.StudentLeavelogActivity;
 import com.sharpdeep.assistant_android.activity.StudentSignlogActivity;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
@@ -52,7 +54,7 @@ public class DrawerHelper {
         return mHelper;
     }
 
-    public DrawerHelper build(final Activity activity,boolean isMainPage){
+    public DrawerHelper buildin(final Activity activity,Toolbar toolbar){
         this.mActivity = activity;
 
         PrimaryDrawerItem homeItem = new PrimaryDrawerItem()
@@ -76,8 +78,8 @@ public class DrawerHelper {
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        if (!(activity instanceof StudentSignlogActivity)){
-                            AndroidUtil.startActivity(activity,StudentSignlogActivity.class);
+                        if (!(activity instanceof StudentSignlogActivity)) {
+                            AndroidUtil.startActivity(activity, StudentSignlogActivity.class);
                         }
                         return false;
                     }
@@ -88,7 +90,16 @@ public class DrawerHelper {
                 .withIdentifier(IDENTIFY_LEAVELOG)
                 .withIcon(R.drawable.ic_action_leavelog)
                 .withSelectedIcon(R.drawable.ic_action_leavelog_selected)
-                .withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.md_blue_700));
+                .withBadgeStyle(new BadgeStyle().withTextColor(Color.WHITE).withColorRes(R.color.md_blue_700))
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        if (!(activity instanceof StudentLeavelogActivity)){
+                            AndroidUtil.startActivity(activity,StudentLeavelogActivity.class);
+                        }
+                        return false;
+                    }
+                });
 
         PrimaryDrawerItem settingItem = new PrimaryDrawerItem()
                 .withName(R.string.setting_page)
@@ -142,6 +153,7 @@ public class DrawerHelper {
 
         mDrawer = new DrawerBuilder()
                 .withActivity(activity)
+                .withToolbar(toolbar)
                 .withAccountHeader(accountHeader)
                 .addDrawerItems(
                         homeItem,
@@ -156,7 +168,7 @@ public class DrawerHelper {
                         exitItem
                 )
                 .build();
-        return mHelper;
+        return this;
     }
 
     public Drawer getDrawer(){
@@ -166,7 +178,7 @@ public class DrawerHelper {
     public DrawerHelper updateBadge(){
         updateStudentSignlogBadge();
         updateStudentLeaveLogBadge();
-        return mHelper;
+        return this;
     }
 
     private void updateStudentSignlogBadge(){

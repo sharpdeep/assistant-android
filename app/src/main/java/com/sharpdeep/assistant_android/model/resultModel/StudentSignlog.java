@@ -17,7 +17,7 @@ public class StudentSignlog {
     private String lessonName;
 
     /**
-     * 
+     *
      * @return
      *     The date
      */
@@ -26,7 +26,7 @@ public class StudentSignlog {
     }
 
     /**
-     * 
+     *
      * @param date
      *     The date
      */

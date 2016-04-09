@@ -6,7 +6,7 @@
     android:layout_marginRight="@dimen/activity_horizontal_margin">
 
     <com.baoyz.widget.PullRefreshLayout
-        android:id="@+id/pullrefresh_student_signlog"
+        android:id="@+id/pullrefresh_student_leavelog"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <RelativeLayout
@@ -24,7 +24,7 @@
             <ExpandableListView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:id="@+id/listview_signlog"
+                android:id="@+id/listview_leavelog"
                 android:scrollbars="none"
                 android:cacheColorHint="#00000000"
                 android:divider="@null"

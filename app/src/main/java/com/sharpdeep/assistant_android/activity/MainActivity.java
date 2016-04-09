@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity{
         showSyllabusIfHasCache();
 
         setupToolBar();
+
         //init DrawMenu
         setupDrawer();
 
@@ -176,10 +177,9 @@ public class MainActivity extends AppCompatActivity{
 
     private void setupDrawer(){
         mDrawer = DrawerHelper.getHelper()
-                .build(MainActivity.this,true)
+                .buildin(MainActivity.this,mToolBar)
                 .updateBadge()
                 .getDrawer();
-
     }
 
     //注销账号
@@ -552,5 +552,11 @@ public class MainActivity extends AppCompatActivity{
         if(this.isFinishing()){
             DataCacher.getInstance().free();
         }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mDrawer.setSelection(DrawerHelper.IDENTIFY_HOME);
     }
 }

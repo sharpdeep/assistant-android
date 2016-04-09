@@ -13,4 +13,16 @@ public class Constant {
     public static final int LEAVE_OTHER = 0; //其他类型
     public static final int LEAVE_SICK = 1; //病假
     public static final int LEAVE_AFFAIR = 2; //事假
+
+    public static String getLeaveTypeName(int type){
+        switch (type){
+            case LEAVE_OTHER:
+                return "其他类型";
+            case LEAVE_SICK:
+                return "病假";
+            case LEAVE_AFFAIR:
+                return "事假";
+        }
+        return "其他类型";
+    }
 }

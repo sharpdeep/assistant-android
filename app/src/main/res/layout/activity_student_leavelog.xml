@@ -6,30 +6,30 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".activity.StudentSignlogActivity">
+    tools:context=".activity.StudentLeavelogActivity">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout_student_signlog"
+        android:id="@+id/appBarLayout_student_leavelog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar_student_signlog"
+            android:id="@+id/toolbar_student_leavelog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
             <TextView
-                android:id="@+id/toolbar_title_student_signlog"
+                android:id="@+id/toolbar_title_student_leavelog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textSize="@dimen/toolbar_title_text"
                 android:textColor="@color/md_white_1000"
-                android:text="@string/toolbar_title_student_signlog"/>
+                android:text="@string/toolbar_title_student_leavelog"/>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_student_signlog"/>
+    <include layout="@layout/content_student_leavelog"/>
 
 </LinearLayout>

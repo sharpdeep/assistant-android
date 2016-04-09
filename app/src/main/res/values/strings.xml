@@ -10,6 +10,8 @@
     <string name="import_selector_dialog_title">导入课表</string>
 
     <string name="toolbar_title_main">未知学期</string>
+    <string name="toolbar_title_student_signlog">我的签到记录</string>
+    <string name="toolbar_title_student_leavelog">我的请假记录</string>
 
     <string name="base_url">http://192.168.1.103:5000</string>
     <!--<string name="base_url">http://10.21.30.23:5000</string>-->
