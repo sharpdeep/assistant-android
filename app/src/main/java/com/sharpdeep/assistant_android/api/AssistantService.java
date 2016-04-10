@@ -4,6 +4,7 @@ package com.sharpdeep.assistant_android.api;
 import com.sharpdeep.assistant_android.model.resultModel.AuthResult;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
+import com.sharpdeep.assistant_android.model.resultModel.LessonInfoResult;
 import com.sharpdeep.assistant_android.model.resultModel.StudentLeavelogResult;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 import com.sharpdeep.assistant_android.model.resultModel.StudentSIgnlogResult;
@@ -32,6 +33,9 @@ public interface AssistantService {
 
     @GET(prefix+"/classinfo/studentlist/{classid}")
     Observable<StudentListResult> getStudentListByClassid(@Header("Authorization") String token,@Path("classid") String classid);
+
+    @GET(prefix+"/lesson/{lessonid}")
+    Observable<LessonInfoResult> getLessonInfo(@Path("lessonid") String lessonid);
 
     @FormUrlEncoded()
     @POST(prefix+"/sign")

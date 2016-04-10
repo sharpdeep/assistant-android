@@ -161,20 +161,6 @@ public class WelcomeActivity extends AppCompatActivity {
         }).subscribeOn(Schedulers.io());
     }
 
-//    private boolean cacheData(){
-//        List<AppInfo> infoList = AppInfo.listAll(AppInfo.class);
-//        if (infoList.size() > 0){
-//            AppInfo appInfo = infoList.get(0);
-//            DataCacher.getInstance().setCurrentYear(appInfo.getCurrentUser().getCurrentYear());
-//            DataCacher.getInstance().setCurrentSemester(appInfo.getCurrentUser().getCurrentSemester());
-//            DataCacher.getInstance().setIdentify(appInfo.getCurrentUser().getIdentify());
-//            DataCacher.getInstance().setToken(appInfo.getCurrentUser().getToken());
-//            DataCacher.getInstance().setCurrentUser(appInfo.getCurrentUser());
-//            return true;
-//        }else{
-//            return false;
-//        }
-//    }
 
 
     @Override

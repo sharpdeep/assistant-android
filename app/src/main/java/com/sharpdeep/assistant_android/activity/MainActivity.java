@@ -51,6 +51,7 @@ import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.DrawerHelper;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.helper.SyllabusFormater;
+import com.sharpdeep.assistant_android.listener.AddLessonListener;
 import com.sharpdeep.assistant_android.model.dbModel.AppInfo;
 import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.model.eventModel.ImportDialogEvent;
@@ -63,6 +64,7 @@ import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.util.ProjectUtil;
 import com.sharpdeep.assistant_android.util.ToastUtil;
 import com.sharpdeep.assistant_android.view.BottomSheetDialog;
+import com.sharpdeep.assistant_android.view.LessonSearchDialog;
 import com.sharpdeep.assistant_android.view.SemesterSelector;
 import com.sharpdeep.assistant_android.view.SyncHorizontalScrollView;
 import com.sharpdeep.assistant_android.view.SyncScrollView;
@@ -323,6 +325,15 @@ public class MainActivity extends AppCompatActivity{
             });
             selector.show();
 
+        } else {
+            new LessonSearchDialog(MainActivity.this)
+                    .setOnAddLessonListener(new AddLessonListener() {
+                        @Override
+                        public void onAddLesson(Lesson lesson) {
+                            ToastUtil.show(MainActivity.this,"add lesson "+lesson.getName());
+                        }
+                    })
+                    .show();
         }
         if(errorFlag){
             final MaterialDialog dialog = new MaterialDialog(MainActivity.this);
@@ -477,6 +488,7 @@ public class MainActivity extends AppCompatActivity{
                 });
     }
 
+    //课程盒子点击后触发事件
     public void onEventMainThread(LessonGridClickEvent event){
         Lesson lesson = event.getLeeson();
         Toast.makeText(MainActivity.this,lesson.getName(),Toast.LENGTH_SHORT).show();

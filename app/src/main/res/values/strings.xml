@@ -13,8 +13,8 @@
     <string name="toolbar_title_student_signlog">我的签到记录</string>
     <string name="toolbar_title_student_leavelog">我的请假记录</string>
 
-    <string name="base_url">http://192.168.1.103:5000</string>
-    <!--<string name="base_url">http://10.21.30.23:5000</string>-->
+    <!--<string name="base_url">http://192.168.1.102:5000</string>-->
+    <string name="base_url">http://10.21.30.35:5000</string>
 
     <string name="home_page">首页</string>
     <string name="oa_page">办公自动化</string>
@@ -42,4 +42,8 @@
     <string name="title_activity_welcome">WelcomeActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="lesson_search_dialog_button">查找</string>
+    <string name="lesson_search_dialog_hint">请先查找到相应课程再添加</string>
+
 </resources>
