@@ -38,6 +38,10 @@ public interface AssistantService {
     Observable<LessonInfoResult> getLessonInfo(@Path("lessonid") String lessonid);
 
     @FormUrlEncoded()
+    @POST(prefix+"/syllabus/{start_year}/{semester}")
+    Observable<SyllabusResult> addLesson(@Header("Authorization") String token, @Path("start_year") String start_year, @Path("semester") int semester, @Field("classid") String classid);
+
+    @FormUrlEncoded()
     @POST(prefix+"/sign")
     Observable<BaseResult> signin(@Header("Authorization") String token,@Field("classid") String classid, @Field("device_id") String device_id,@Field("mac") String mac);
 
@@ -56,4 +60,5 @@ public interface AssistantService {
 
     @GET(prefix+"/leavelist/student/{username}/{date}")
     Observable<StudentLeavelogResult> getStudentLeavelog(@Path("username") String username, @Path("date") String date);
+
 }

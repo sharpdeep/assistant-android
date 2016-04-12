@@ -44,9 +44,7 @@ public class LessonHomePageActivity  extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (DataCacher.getInstance().getIdentify().equals(User.IDENTIFY_STUDENT)){
-            setContentView(R.layout.activity_lesson_homepage);
-        }
+        setContentView(R.layout.activity_lesson_homepage);
         init();
     }
 

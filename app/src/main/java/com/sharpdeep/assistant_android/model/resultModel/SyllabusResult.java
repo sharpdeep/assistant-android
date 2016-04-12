@@ -79,6 +79,14 @@ public class SyllabusResult {
         return Constant.SUCCESS.equals(this.status);
     }
 
+    public boolean isFailed(){
+        return Constant.FAILED.equals(this.status);
+    }
+
+    public boolean isError(){
+        return Constant.ERROR.equals(this.status);
+    }
+
     public String toJson(){
         Gson gson = new Gson();
         return gson.toJson(this);

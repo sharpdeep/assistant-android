@@ -316,11 +316,36 @@ public class MainActivity extends AppCompatActivity{
             SemesterSelector selector = new SemesterSelector(MainActivity.this,"请先设置当前学期","确定");
             selector.setOnSelectedListener(new SemesterSelector.OnSelectedListener() {
                 @Override
-                public void onSelected(String selectedYear, int selectedSemester) {
-                    L.d("seletor -> "+selectedYear+":"+selectedSemester);
-                    DataCacher.getInstance().setShowingYear(selectedYear);
-                    DataCacher.getInstance().setShowingSemester(selectedSemester);
-                    mTxtToolbarTitle.setText(selectedYear  + convertSemester2Str(selectedSemester));
+                public void onSelected(final String selectedYear, final int selectedSemester) {
+                    syncSyllabus(selectedYear,selectedSemester)
+                            .subscribe(new Subscriber<SyllabusResult>() {
+                                @Override
+                                public void onCompleted() {
+                                    ToastUtil.show(MainActivity.this,"sync completed");
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+
+                                @Override
+                                public void onNext(SyllabusResult result) {
+                                    if (result.isError()){
+                                        ToastUtil.show(MainActivity.this,"服务器出错");
+                                        return;
+                                    }
+                                    if (result.isSuccess()){
+                                        showSyllabus(result);
+                                        DataCacher.getInstance().setShowingSyllabus(result.toJson());
+                                    }
+                                    L.d("seletor -> "+selectedYear+":"+selectedSemester);
+                                    DataCacher.getInstance().setShowingYear(selectedYear);
+                                    DataCacher.getInstance().setShowingSemester(selectedSemester);
+                                    mTxtToolbarTitle.setText(selectedYear  + convertSemester2Str(selectedSemester));
+                                }
+                            });
+
                 }
             });
             selector.show();
@@ -330,7 +355,8 @@ public class MainActivity extends AppCompatActivity{
                     .setOnAddLessonListener(new AddLessonListener() {
                         @Override
                         public void onAddLesson(Lesson lesson) {
-                            ToastUtil.show(MainActivity.this,"add lesson "+lesson.getName());
+                            ToastUtil.show(MainActivity.this,"add lesson "+lesson.getId());
+                            addLesson(lesson.getId());
                         }
                     })
                     .show();
@@ -353,6 +379,52 @@ public class MainActivity extends AppCompatActivity{
 
         L.d("showing ->" + DataCacher.getInstance().getShowingYear() + DataCacher.getInstance().getShowingSemester() +
                 ";current ->" + DataCacher.getInstance().getCurrentYear() + DataCacher.getInstance().getCurrentSemester());
+    }
+
+    /**
+     * 将服务器当前学期的课表同步下来，作用于教师用户
+     */
+    private Observable<SyllabusResult> syncSyllabus(String start_year, int semester){
+        Retrofit retrofit = RetrofitHelper.getRetrofit(MainActivity.this);
+        return retrofit.create(AssistantService.class)
+                .getSyllabus(DataCacher.getInstance().getToken(),start_year,semester)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * 添加课程到课表,同步到服务器，作用于老师
+     * 需要选择好当前学期先
+     */
+    private void addLesson(String classid){
+        Retrofit retrofit = RetrofitHelper.getRetrofit(MainActivity.this);
+        retrofit.create(AssistantService.class)
+                .addLesson(DataCacher.getInstance().getToken(),DataCacher.getInstance().getShowingYear(),DataCacher.getInstance().getShowingSemester(),classid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SyllabusResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        ToastUtil.show(MainActivity.this,"请检查网络");
+                        L.d(e.toString());
+                        L.d(DataCacher.getInstance().getToken());
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(SyllabusResult result) {
+                        if (result.isSuccess()){
+                            showSyllabus(result);
+                            DataCacher.getInstance().setShowingSyllabus(result.toJson());
+                        }
+                        ToastUtil.show(MainActivity.this,result.getMsg());
+                    }
+                });
     }
 
     void showImportDialog(){

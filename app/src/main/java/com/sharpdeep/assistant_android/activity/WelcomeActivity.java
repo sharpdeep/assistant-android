@@ -7,7 +7,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
+import com.orm.SugarApp;
+import com.orm.SugarDb;
+import com.orm.SugarRecord;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.helper.DataCacher;
@@ -16,7 +20,9 @@ import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.model.resultModel.Schedule;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
+import com.sharpdeep.assistant_android.util.ToastUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -129,10 +135,22 @@ public class WelcomeActivity extends AppCompatActivity {
                 })
                 .delay(1,TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Class>() {
+                .subscribe(new Subscriber<Class>() {
                     @Override
-                    public void call(Class aClass) {
-                        startActivityAndFinsh(aClass);
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d(e.toString());
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Class aClass) {
+                        ToastUtil.show(WelcomeActivity.this,"start"+aClass.toString());
+                        AndroidUtil.startActivity(WelcomeActivity.this,LoginActivity.class);
                     }
                 });
         //判断网络连接情况(todo)
@@ -154,7 +172,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     } else {
                         subscriber.onNext(cUser.getAuthTime());
                     }
-                } else if (infoList.size() == 0) {
+                } else{
                     subscriber.onNext(0l);
                 }
             }

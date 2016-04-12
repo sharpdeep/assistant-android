@@ -79,7 +79,7 @@ public class StudentListFragment extends Fragment {
                 if (mBMBInit) {
                     return;
                 }
-                initBMB();
+                initStudentBMB();
             }
         });
 
@@ -105,7 +105,7 @@ public class StudentListFragment extends Fragment {
         MaterialViewPagerHelper.registerRecyclerView(getActivity(), mViewStudentList, null);
     }
 
-    private void initBMB() {
+    private void initStudentBMB() {
         int[] drawablesResource = new int[]{
                 R.drawable.ic_image_sign_white_128,
                 R.drawable.ic_image_leave_white_128
@@ -159,6 +159,60 @@ public class StudentListFragment extends Fragment {
         mBMBInit = true;
     }
 
+    private void initTeacherBMB(){
+        int[] drawablesResource = new int[]{
+                R.drawable.ic_image_sign_white_128,
+                R.drawable.ic_image_leave_white_128,
+                R.drawable.ic_action_random
+        };
+        String[] subBtnTexts = new String[]{"签到","请假","点名"};
+        int[][] subBtnColors = new int[drawablesResource.length][2];
+        Drawable[] subBtnDrawables = new Drawable[drawablesResource.length];
+
+        //init subBtnDrawables
+        for(int i = 0; i < drawablesResource.length; i++){
+            subBtnDrawables[i] = ContextCompat.getDrawable(getContext(),drawablesResource[i]);
+        }
+        //init subBtnColors
+        for (int i = 0; i < drawablesResource.length; i++){
+            subBtnColors[i][1] = ContextCompat.getColor(getContext(), R.color.material_blue_300);
+            subBtnColors[i][0] = Util.getInstance().getPressedColor(subBtnColors[i][1]);
+        }
+
+        mBMBCheckInBtn.init(
+                subBtnDrawables, // The drawables of images of sub buttons. Can not be null.
+                subBtnTexts,     // The texts of sub buttons, ok to be null.
+                subBtnColors,    // The colors of sub buttons, including pressed-state and normal-state.
+                ButtonType.CIRCLE,     // The button type.
+                BoomType.PARABOLA,  // The boom type.
+                PlaceType.CIRCLE_2_1,  // The place type.
+                null,               // Ease type to move the sub buttons when showing.
+                null,               // Ease type to scale the sub buttons when showing.
+                null,               // Ease type to rotate the sub buttons when showing.
+                null,               // Ease type to move the sub buttons when dismissing.
+                null,               // Ease type to scale the sub buttons when dismissing.
+                null,               // Ease type to rotate the sub buttons when dismissing.
+                null                // Rotation degree.
+        );
+
+        mBMBCheckInBtn.setTextViewColor(ContextCompat.getColor(getContext(), R.color.white));
+        mBMBCheckInBtn.setOnSubButtonClickListener(new BoomMenuButton.OnSubButtonClickListener() {
+            @Override
+            public void onClick(int buttonIndex) {
+                switch (buttonIndex){
+                    case 0:
+                        L.d("签到");
+                        signin();
+                        break;
+                    case 1:
+                        L.d("请假");
+                        askLeave();
+                        break;
+                }
+            }
+        });
+        mBMBInit = true;
+    }
 
     public void getStudentListThenUpdate(final View view) {
         Retrofit retrofit = RetrofitHelper.getRetrofit(getContext());

@@ -9,6 +9,7 @@ public class Constant {
 
     public static final String SUCCESS = "success";
     public static final String FAILED = "failed";
+    public static final String ERROR = "error";
 
     public static final int LEAVE_OTHER = 0; //其他类型
     public static final int LEAVE_SICK = 1; //病假

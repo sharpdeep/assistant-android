@@ -12,6 +12,7 @@ import com.hanks.htextview.HTextView;
 import com.hanks.htextview.animatetext.HText;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.api.AssistantService;
+import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.listener.AddLessonListener;
 import com.sharpdeep.assistant_android.model.resultModel.Lesson;
@@ -78,6 +79,9 @@ public class LessonSearchDialog {
     }
 
 
+
+
+
     public void show(){
         mDialog = new MaterialDialog(this.mContext)
                 .setTitle("添加课程")
@@ -120,6 +124,7 @@ public class LessonSearchDialog {
                     @Override
                     public void onError(Throwable e) {
                         ToastUtil.show((Activity) mContext, "服务器出了点问题或者网络有误");
+                        L.d(DataCacher.getInstance().getToken());
                         L.d(e.toString());
                         e.printStackTrace();
                     }
