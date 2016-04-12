@@ -241,6 +241,12 @@ public class MainActivity extends AppCompatActivity{
         mFab.hide(true);
     }
 
+    @OnLongClick(R.id.syllabus_bg)
+    boolean onEmptyClassTableLongClcik(View view){
+        showBottomSheet();
+        return false;
+    }
+
     @OnLongClick(R.id.classGridLayout)
     boolean onClassTableLongClcik(View view){
         showBottomSheet();

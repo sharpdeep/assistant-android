@@ -135,22 +135,10 @@ public class WelcomeActivity extends AppCompatActivity {
                 })
                 .delay(1,TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Class>() {
+                .subscribe(new Action1<Class>() {
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        L.d(e.toString());
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(Class aClass) {
-                        ToastUtil.show(WelcomeActivity.this,"start"+aClass.toString());
-                        AndroidUtil.startActivity(WelcomeActivity.this,LoginActivity.class);
+                    public void call(Class aClass) {
+                        startActivityAndFinsh(aClass);
                     }
                 });
         //判断网络连接情况(todo)

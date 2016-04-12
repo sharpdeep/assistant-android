@@ -1,7 +1,6 @@
 package com.sharpdeep.assistant_android.model.dbModel;
 
 import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
 
 /**
  * Created by bear on 16-1-13.
