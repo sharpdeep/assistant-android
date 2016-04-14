@@ -32,14 +32,14 @@ public class LessonHomePageActivity  extends AppCompatActivity{
     @Bind(R.id.textview_header_lesson_homepage)
     TextView mHeader;
 
-    private int mLessonColor;
-    private String mLessonName;
+    public int mLessonColor;
+    public String mLessonName;
     private List<String> mTabTitleList;
-    private String mLessonId;
-    private String mLessonTeacher;
+    public String mLessonId;
+    public String mLessonTeacher;
 
     private WindowFocusChangedListener mWFCListener;
-    private List<Student> mStudentList = new ArrayList<>();
+    public ArrayList<Student> mStudentList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +108,8 @@ public class LessonHomePageActivity  extends AppCompatActivity{
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return new StudentListFragment(mLessonId);
+                    StudentListFragment fragment = new StudentListFragment();
+                    return fragment;
                 case 1:
                 case 2:
                     return new LessonDiscussionFragment();

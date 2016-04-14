@@ -31,7 +31,7 @@ import me.drakeet.materialdialog.MaterialDialog;
 /**
  * Created by bear on 16-1-23.
  */
-public class LessonDiscussionFragment extends Fragment {
+public class LessonDiscussionFragment extends LessonPageBaseFragment {
     @Bind(R.id.listView_lessondiscussion)
     RecyclerView mViewDiscussionMsgList;
     @Bind(R.id.fab_add_discussion)

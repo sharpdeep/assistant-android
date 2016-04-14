@@ -49,6 +49,9 @@
         <activity
             android:name=".activity.StudentLeavelogActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".activity.LessonSignlogActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <meta-data
             android:name="DATABASE"
             android:value="assistant.db" />

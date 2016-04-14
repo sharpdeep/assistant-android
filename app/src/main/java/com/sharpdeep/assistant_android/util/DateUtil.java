@@ -1,8 +1,11 @@
 package com.sharpdeep.assistant_android.util;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Timer;
 
 /**
  * Created by bear on 16-4-9.
@@ -10,10 +13,10 @@ import java.util.Calendar;
 public class DateUtil {
 
     public static String getWeekStrByDateStr(String dateStr,String dateFormat){
-        SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+        SimpleDateFormat formater = new SimpleDateFormat(dateFormat);
         Calendar c = Calendar.getInstance();
         try {
-            c.setTime(format.parse(dateStr));
+            c.setTime(formater.parse(dateStr));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -34,5 +37,16 @@ public class DateUtil {
                 return "星期六";
         }
         return "";
+    }
+
+    public static String getDateStr(int year, int month, int day_of_month,String dateFormat){
+        Calendar c = Calendar.getInstance();
+        c.set(year,month-1,day_of_month);
+        return getDateStr(c.getTime(),dateFormat);
+    }
+
+    public static String getDateStr(Date date, String dateFormat){
+        SimpleDateFormat formater = new SimpleDateFormat(dateFormat);
+        return formater.format(date);
     }
 }

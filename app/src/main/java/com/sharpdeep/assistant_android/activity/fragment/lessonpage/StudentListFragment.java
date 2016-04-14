@@ -22,25 +22,35 @@ import com.nightonke.boommenu.Types.PlaceType;
 import com.nightonke.boommenu.Util;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.activity.LessonHomePageActivity;
+import com.sharpdeep.assistant_android.activity.LessonSignlogActivity;
+import com.sharpdeep.assistant_android.activity.StudentSignlogActivity;
 import com.sharpdeep.assistant_android.api.AssistantService;
+import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.listener.WindowFocusChangedListener;
+import com.sharpdeep.assistant_android.model.eventModel.LessonEvent;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
 import com.sharpdeep.assistant_android.model.resultModel.Student;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
+import com.sharpdeep.assistant_android.util.AndroidUtil;
+import com.sharpdeep.assistant_android.util.EventBusUtil;
 import com.sharpdeep.assistant_android.util.L;
+import com.sharpdeep.assistant_android.util.ProjectUtil;
 import com.sharpdeep.assistant_android.view.AlertDialog;
 import com.sharpdeep.assistant_android.view.AskLeaveDialog;
 import com.sharpdeep.assistant_android.view.LoadingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit.Retrofit;
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -49,22 +59,20 @@ import rx.schedulers.Schedulers;
 /**
  * Created by bear on 16-1-22.
  */
-public class StudentListFragment extends Fragment {
+public class StudentListFragment extends LessonPageBaseFragment {
 
     RecyclerView mViewStudentList;
     private RecyclerView.Adapter mAdapter;
     private List<Student> mStudentList = new ArrayList<>();
 
-    private String mLessonId;
     private Boolean mBMBInit = false;
 
     @Bind(R.id.check_in_boom_menu)
     BoomMenuButton mBMBCheckInBtn;
 
-    public StudentListFragment(String lessonId){
-        this.mLessonId = lessonId;
+    //编译Apk时候提示需要无参构造函数，不要删除
+    public StudentListFragment(){
     }
-
 
     @Nullable
     @Override
@@ -79,7 +87,11 @@ public class StudentListFragment extends Fragment {
                 if (mBMBInit) {
                     return;
                 }
-                initStudentBMB();
+                if (ProjectUtil.isStudent(DataCacher.getInstance().getIdentify())){
+                    initStudentBMB();
+                }else{
+                    initTeacherBMB();
+                }
             }
         });
 
@@ -162,10 +174,9 @@ public class StudentListFragment extends Fragment {
     private void initTeacherBMB(){
         int[] drawablesResource = new int[]{
                 R.drawable.ic_image_sign_white_128,
-                R.drawable.ic_image_leave_white_128,
                 R.drawable.ic_action_random
         };
-        String[] subBtnTexts = new String[]{"签到","请假","点名"};
+        String[] subBtnTexts = new String[]{"考勤","点名"};
         int[][] subBtnColors = new int[drawablesResource.length][2];
         Drawable[] subBtnDrawables = new Drawable[drawablesResource.length];
 
@@ -201,12 +212,14 @@ public class StudentListFragment extends Fragment {
             public void onClick(int buttonIndex) {
                 switch (buttonIndex){
                     case 0:
-                        L.d("签到");
-                        signin();
+                        L.d("考勤");
+                        LessonEvent event = new LessonEvent(getLessonColor(),getLessonName(),getLessonId(),getLessonTeacher(),getStudentList());
+                        EventBusUtil.delayPost(event,1,TimeUnit.SECONDS);
+                        AndroidUtil.startActivity(getActivity(), LessonSignlogActivity.class);
                         break;
                     case 1:
-                        L.d("请假");
-                        askLeave();
+                        L.d("点名");
+//                        askLeave();
                         break;
                 }
             }
@@ -217,7 +230,7 @@ public class StudentListFragment extends Fragment {
     public void getStudentListThenUpdate(final View view) {
         Retrofit retrofit = RetrofitHelper.getRetrofit(getContext());
         retrofit.create(AssistantService.class)
-                .getStudentListByClassid(DataCacher.getInstance().getToken(),mLessonId)
+                .getStudentListByClassid(DataCacher.getInstance().getToken(),getLessonId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<StudentListResult>() {
@@ -388,10 +401,6 @@ public class StudentListFragment extends Fragment {
         }
     }
 
-    private String getLessonId(){
-        return this.mLessonId;
-    }
-
     private String getDeviceId(){
         return "123";
     }
@@ -399,4 +408,6 @@ public class StudentListFragment extends Fragment {
     private String getWifiMac(){
         return "mac";
     }
+
+
 }
