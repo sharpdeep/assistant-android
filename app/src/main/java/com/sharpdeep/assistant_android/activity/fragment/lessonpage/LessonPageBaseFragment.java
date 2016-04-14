@@ -27,10 +27,6 @@ public class LessonPageBaseFragment extends Fragment {
         return getHomeActivity().mLessonTeacher;
     }
 
-    protected ArrayList<Student> getStudentList(){
-        return getHomeActivity().mStudentList;
-    }
-
 
     private LessonHomePageActivity getHomeActivity(){
         return (LessonHomePageActivity) getActivity();

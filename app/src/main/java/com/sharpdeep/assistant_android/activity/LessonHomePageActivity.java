@@ -39,7 +39,6 @@ public class LessonHomePageActivity  extends AppCompatActivity{
     public String mLessonTeacher;
 
     private WindowFocusChangedListener mWFCListener;
-    public ArrayList<Student> mStudentList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

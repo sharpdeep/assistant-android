@@ -63,7 +63,7 @@ public class StudentListFragment extends LessonPageBaseFragment {
 
     RecyclerView mViewStudentList;
     private RecyclerView.Adapter mAdapter;
-    private List<Student> mStudentList = new ArrayList<>();
+    private ArrayList<Student> mStudentList = new ArrayList<>();
 
     private Boolean mBMBInit = false;
 
@@ -213,7 +213,7 @@ public class StudentListFragment extends LessonPageBaseFragment {
                 switch (buttonIndex){
                     case 0:
                         L.d("考勤");
-                        LessonEvent event = new LessonEvent(getLessonColor(),getLessonName(),getLessonId(),getLessonTeacher(),getStudentList());
+                        LessonEvent event = new LessonEvent(getLessonColor(),getLessonName(),getLessonId(),getLessonTeacher(), mStudentList);
                         EventBusUtil.delayPost(event,1,TimeUnit.SECONDS);
                         AndroidUtil.startActivity(getActivity(), LessonSignlogActivity.class);
                         break;
@@ -246,7 +246,7 @@ public class StudentListFragment extends LessonPageBaseFragment {
                     @Override
                     public void onNext(StudentListResult studentListResult) {
                         if (studentListResult.isSuccess()) {
-                            mStudentList = studentListResult.getStudents();
+                            mStudentList = (ArrayList<Student>) studentListResult.getStudents();
                             mAdapter.notifyDataSetChanged();
                         } else {
                             Toast.makeText(getContext(), studentListResult.getMsg(), Toast.LENGTH_SHORT).show();

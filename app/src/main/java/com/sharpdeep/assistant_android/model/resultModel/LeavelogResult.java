@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.sharpdeep.assistant_android.helper.Constant;
 
-public class StudentLeavelogResult {
+public class LeavelogResult {
 
     @SerializedName("error_code")
     @Expose
     private int errorCode;
     @SerializedName("leavelog")
     @Expose
-    private List<StudentLeavelog> leavelog = new ArrayList<StudentLeavelog>();
+    private List<Leavelog> leavelog = new ArrayList<Leavelog>();
     @SerializedName("msg")
     @Expose
     private String msg;
@@ -44,7 +45,7 @@ public class StudentLeavelogResult {
      * @return
      *     The leavelog
      */
-    public List<StudentLeavelog> getLeavelog() {
+    public List<Leavelog> getLeavelog() {
         return leavelog;
     }
 
@@ -53,7 +54,7 @@ public class StudentLeavelogResult {
      * @param leavelog
      *     The leavelog
      */
-    public void setLeavelog(List<StudentLeavelog> leavelog) {
+    public void setLeavelog(List<Leavelog> leavelog) {
         this.leavelog = leavelog;
     }
 
@@ -93,4 +94,7 @@ public class StudentLeavelogResult {
         this.status = status;
     }
 
+    public boolean isSuccess(){
+        return this.status.equals(Constant.SUCCESS);
+    }
 }

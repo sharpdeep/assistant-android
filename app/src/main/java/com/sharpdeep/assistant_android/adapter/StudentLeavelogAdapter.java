@@ -9,8 +9,7 @@ import android.widget.TextView;
 
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.helper.Constant;
-import com.sharpdeep.assistant_android.model.resultModel.StudentLeavelog;
-import com.sharpdeep.assistant_android.model.resultModel.StudentSignlog;
+import com.sharpdeep.assistant_android.model.resultModel.Leavelog;
 import com.sharpdeep.assistant_android.util.DateUtil;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ import java.util.Map;
  */
 public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
     private Context mContext;
-    private ArrayList<ArrayList<StudentLeavelog>> mLeavelogs;
+    private ArrayList<ArrayList<Leavelog>> mLeavelogs;
     private LayoutInflater mInflater;
 
     public StudentLeavelogAdapter(Context context){
@@ -34,35 +33,35 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
         this.mLeavelogs = new ArrayList<>();
     }
 
-    public void updateData(List<StudentLeavelog> studentLeavelogList){
+    public void updateData(List<Leavelog> studentLeavelogList){
         mLeavelogs = handleStudentLeavelogList(studentLeavelogList);
         notifyDataSetChanged();
     }
 
-    private ArrayList<ArrayList<StudentLeavelog>> handleStudentLeavelogList(List<StudentLeavelog> studentLeavelogList){
+    private ArrayList<ArrayList<Leavelog>> handleStudentLeavelogList(List<Leavelog> studentLeavelogList){
         //根据日期分组
-        HashMap<String,ArrayList<StudentLeavelog>> map = new HashMap<>();
-        for (StudentLeavelog log : studentLeavelogList){
+        HashMap<String,ArrayList<Leavelog>> map = new HashMap<>();
+        for (Leavelog log : studentLeavelogList){
             if (map.containsKey(log.getDate())){
                 map.get(log.getDate()).add(log);
             }else{
-                ArrayList<StudentLeavelog> list = new ArrayList<>();
+                ArrayList<Leavelog> list = new ArrayList<>();
                 list.add(log);
                 map.put(log.getDate(),list);
             }
         }
         //对HashMap根据key(Date)排序
-        List<Map.Entry<String,ArrayList<StudentLeavelog>>> list = new ArrayList<>(map.entrySet());
-        Collections.sort(list, new Comparator<Map.Entry<String, ArrayList<StudentLeavelog>>>() {
+        List<Map.Entry<String,ArrayList<Leavelog>>> list = new ArrayList<>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<String, ArrayList<Leavelog>>>() {
             @Override
-            public int compare(Map.Entry<String, ArrayList<StudentLeavelog>> lhs, Map.Entry<String, ArrayList<StudentLeavelog>> rhs) {
+            public int compare(Map.Entry<String, ArrayList<Leavelog>> lhs, Map.Entry<String, ArrayList<Leavelog>> rhs) {
                 return lhs.getKey().compareTo(rhs.getKey());
             }
         });
 
-        ArrayList<ArrayList<StudentLeavelog>> signlog = new ArrayList<>();
+        ArrayList<ArrayList<Leavelog>> signlog = new ArrayList<>();
         //将分组排序好的数据再组装到signlogs中
-        for (Map.Entry<String,ArrayList<StudentLeavelog>> entry : list){
+        for (Map.Entry<String,ArrayList<Leavelog>> entry : list){
             signlog.add(entry.getValue());
         }
 
@@ -134,7 +133,7 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
             convertView.setTag(holder);
         }
         holder = (ChildViewHolder) convertView.getTag();
-        StudentLeavelog log = mLeavelogs.get(groupPosition).get(childPosition);
+        Leavelog log = mLeavelogs.get(groupPosition).get(childPosition);
         holder.content.setText(
                         "课程号:\t"+log.getClassid()+
                         "\n课程名\t:"+log.getClassname()+

@@ -8,50 +8,85 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.sharpdeep.assistant_android.R;
+import com.sharpdeep.assistant_android.model.resultModel.Leavelog;
 import com.sharpdeep.assistant_android.model.resultModel.LessonSignlog;
+import com.sharpdeep.assistant_android.model.resultModel.Student;
 import com.sharpdeep.assistant_android.model.resultModel.StudentSignlog;
 import com.sharpdeep.assistant_android.util.DateUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by bear on 16-4-13.
  */
 public class LessonSignlogAdapter extends BaseExpandableListAdapter {
     private Context mContext;
-    private ArrayList<LessonSignlog> mSignlogs;
+    private String mDateStr;
     private LayoutInflater mInflater;
+
+    private ArrayList<Student> mStudents;
 
     public LessonSignlogAdapter(Context context){
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mSignlogs = new ArrayList<>();
+        this.mStudents = new ArrayList<>();
     }
 
-    public void updateData(ArrayList<LessonSignlog> signlogs){
-        mSignlogs = signlogs;
+    //用来更新签到名单
+    public void updateData(HashMap<String,Student> studentMap,ArrayList<LessonSignlog> signlogs,String dateStr){
+        HashMap map = new HashMap();
+        for (LessonSignlog log : signlogs){
+            map.put(log.getStudentName(),studentMap.get(log.getStudentName()));
+        }
+        updateData(map,dateStr);
+    }
+
+    //更新缺勤名单
+    public void updateData(HashMap<String,Student> studentMap, ArrayList<LessonSignlog> signlogs, ArrayList<Leavelog> leavelogs,String dateStr){
+        HashMap<String,Student> map = (HashMap<String, Student>) studentMap.clone();
+        for (LessonSignlog log : signlogs){
+            map.remove(log.getStudentName());
+        }
+        for (Leavelog log : leavelogs){
+            map.remove(log.getStudentname());
+        }
+        updateData(map,dateStr);
+    }
+
+    public void updateData(HashMap<String,Student> studentMap,String dateStr){
+        mStudents.clear();
+        if (studentMap.size() != 0){
+            for (Map.Entry<String,Student> entry : studentMap.entrySet()){
+                mStudents.add(entry.getValue());
+            }
+        }
+        mDateStr = dateStr;
         notifyDataSetChanged();
     }
 
     @Override
     public int getGroupCount() {
-        return (mSignlogs.size() == 0 ? 0 : 1);
+        return (mStudents.size() == 0 ? 0 : 1);
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return mSignlogs.size();
+        return mStudents.size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return mSignlogs;
+        return mStudents;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return mSignlogs.get(childPosition);
+        return mStudents.get(childPosition);
     }
 
     @Override
@@ -79,8 +114,7 @@ public class LessonSignlogAdapter extends BaseExpandableListAdapter {
             convertView.setTag(holder);
         }
         holder = (GroupViewHolder) convertView.getTag();
-        String dateStr = mSignlogs.get(0).getDate();
-        holder.sectionName.setText(dateStr+" "+ DateUtil.getWeekStrByDateStr(dateStr,"yyyyMMdd"));
+        holder.sectionName.setText(mDateStr+" "+ DateUtil.getWeekStrByDateStr(mDateStr,"yyyyMMdd"));
         return convertView;
     }
 
@@ -88,14 +122,19 @@ public class LessonSignlogAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         ChildViewHolder holder;
         if (convertView == null){
-            convertView = mInflater.inflate(R.layout.item_log_content,null);
+            convertView = mInflater.inflate(R.layout.item_studentlist,null);
             holder = new ChildViewHolder();
-            holder.content = (TextView) convertView.findViewById(R.id.txt_signlog_content);
+            holder.studentName = (TextView) convertView.findViewById(R.id.textview_studentlist_studentname);
+            holder.studentId = (TextView) convertView.findViewById(R.id.textview_studentlist_studentid);
+            holder.studentMajor = (TextView) convertView.findViewById(R.id.textview_studentlist_studentmajor);
+            holder.avator = (CircleImageView) convertView.findViewById(R.id.imageview_studentlist_studentavator);
             convertView.setTag(holder);
         }
         holder = (ChildViewHolder) convertView.getTag();
-        LessonSignlog log = mSignlogs.get(childPosition);
-        holder.content.setText("学生id:"+log.getStudentId()+"\n姓名:"+log.getStudentName());
+        Student student = mStudents.get(childPosition);
+        holder.studentName.setText(student.getName());
+        holder.studentId.setText(student.getId());
+        holder.studentMajor.setText(student.getMajor());
         return convertView;
     }
 
@@ -110,6 +149,10 @@ public class LessonSignlogAdapter extends BaseExpandableListAdapter {
     }
 
     static class ChildViewHolder{
-        TextView content;
+        CircleImageView avator;
+        TextView studentName;
+        TextView studentId;
+        TextView studentMajor;
+//        TextView content;
     }
 }

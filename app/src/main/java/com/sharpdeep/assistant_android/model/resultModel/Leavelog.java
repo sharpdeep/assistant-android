@@ -4,7 +4,7 @@ package com.sharpdeep.assistant_android.model.resultModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class StudentLeavelog {
+public class Leavelog {
 
     @SerializedName("classid")
     @Expose

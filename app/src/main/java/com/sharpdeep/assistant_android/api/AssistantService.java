@@ -6,7 +6,7 @@ import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
 import com.sharpdeep.assistant_android.model.resultModel.LessonInfoResult;
 import com.sharpdeep.assistant_android.model.resultModel.LessonSignlogResult;
-import com.sharpdeep.assistant_android.model.resultModel.StudentLeavelogResult;
+import com.sharpdeep.assistant_android.model.resultModel.LeavelogResult;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 import com.sharpdeep.assistant_android.model.resultModel.StudentSIgnlogResult;
 import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
@@ -60,8 +60,11 @@ public interface AssistantService {
     Observable<StudentSIgnlogResult> getStudentSignlog(@Path("username") String username, @Path("date") String date);
 
     @GET(prefix+"/leavelist/student/{username}/{date}")
-    Observable<StudentLeavelogResult> getStudentLeavelog(@Path("username") String username, @Path("date") String date);
+    Observable<LeavelogResult> getStudentLeavelog(@Path("username") String username, @Path("date") String date);
 
     @GET(prefix+"/signlist/lesson/{classid}/{date}")
     Observable<LessonSignlogResult> getLessonSignlog(@Path("classid") String classid, @Path("date") String date);
+
+    @GET(prefix+"/leavelist/lesson/{classid}/{date}")
+    Observable<LeavelogResult> getLessonLeaveLog(@Path("classid") String classid, @Path("date") String date);
 }

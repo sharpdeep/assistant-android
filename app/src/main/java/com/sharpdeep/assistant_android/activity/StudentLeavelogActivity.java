@@ -11,8 +11,7 @@ import com.sharpdeep.assistant_android.adapter.StudentLeavelogAdapter;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.helper.RetrofitHelper;
-import com.sharpdeep.assistant_android.model.resultModel.StudentLeavelog;
-import com.sharpdeep.assistant_android.model.resultModel.StudentLeavelogResult;
+import com.sharpdeep.assistant_android.model.resultModel.LeavelogResult;
 import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.util.ToastUtil;
 
@@ -76,7 +75,7 @@ public class StudentLeavelogActivity extends AppCompatActivity {
                 .getStudentLeavelog(DataCacher.getInstance().getCurrentUser().getUsername(),"all")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<StudentLeavelogResult>() {
+                .subscribe(new Subscriber<LeavelogResult>() {
                     @Override
                     public void onCompleted() {
                         mRefreshControl.setRefreshing(false);
@@ -91,7 +90,7 @@ public class StudentLeavelogActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNext(StudentLeavelogResult studentLeavelogResult) {
+                    public void onNext(LeavelogResult studentLeavelogResult) {
                         mleavelogAdapter.updateData(studentLeavelogResult.getLeavelog());
                         for (int i = 0; i < mleavelogAdapter.getGroupCount(); i++){
                             mLVLeavelog.expandGroup(i);
