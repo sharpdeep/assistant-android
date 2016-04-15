@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
+import com.hanks.htextview.HTextView;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.activity.fragment.lessonpage.LessonDiscussionFragment;
 import com.sharpdeep.assistant_android.activity.fragment.lessonpage.StudentListFragment;
@@ -16,6 +17,7 @@ import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.listener.WindowFocusChangedListener;
 import com.sharpdeep.assistant_android.model.dbModel.User;
 import com.sharpdeep.assistant_android.model.resultModel.Student;
+import com.sharpdeep.assistant_android.util.L;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,7 @@ public class LessonHomePageActivity  extends AppCompatActivity{
 
     private void init() {
         ButterKnife.bind(this);
+        L.init();
 
         //get data from MainActivity
         Bundle bundle = this.getIntent().getExtras();

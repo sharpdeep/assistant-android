@@ -113,7 +113,6 @@ public class WelcomeActivity extends AppCompatActivity {
         mVisible = true;
         mContentView.setBackgroundResource(R.drawable.welcome);
 
-        L.init();
 
         authCheck();
     }

@@ -70,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this); //butterknife init
         setSupportActionBar(mToolBar);
         Genius.initialize(getApplication());
+        L.init();
 
         initAutoComplete();
 

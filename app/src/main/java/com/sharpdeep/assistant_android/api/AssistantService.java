@@ -67,4 +67,10 @@ public interface AssistantService {
 
     @GET(prefix+"/leavelist/lesson/{classid}/{date}")
     Observable<LeavelogResult> getLessonLeaveLog(@Path("classid") String classid, @Path("date") String date);
+
+    @POST(prefix+"/like/lesson/{classid}")
+    Observable<BaseResult> likeLesson(@Header("Authorization") String token, @Path("classid") String classid);
+
+    @GET(prefix+"/like/lesson/{classid}")
+    Observable<BaseResult> getLessonLikeCount(@Path("classid") String classid);
 }

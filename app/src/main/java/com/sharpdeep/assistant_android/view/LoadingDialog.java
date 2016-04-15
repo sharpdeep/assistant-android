@@ -43,7 +43,7 @@ public class LoadingDialog {
         L.d("show");
     }
 
-    public void setDismissObservable(Observable<Boolean> observable){
+    public LoadingDialog setDismissObservable(Observable<Boolean> observable){
         observable.observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Boolean>() {
                     @Override
@@ -55,7 +55,7 @@ public class LoadingDialog {
                     public void onError(Throwable e) {
                         dismiss();
                         if (mErrorHandler != null){
-                            mErrorHandler.handler();
+                            mErrorHandler.handler(e);
                         }
                     }
 
@@ -67,10 +67,12 @@ public class LoadingDialog {
                         }
                     }
                 });
+        return this;
     }
 
-    public void setErrorHandler(ErrorHandler handler){
+    public LoadingDialog setErrorHandler(ErrorHandler handler){
         this.mErrorHandler = handler;
+        return this;
     }
 
     private void dismiss(){
@@ -81,6 +83,6 @@ public class LoadingDialog {
     }
 
     public interface ErrorHandler{
-        void handler();
+        void handler(Throwable e);
     }
 }

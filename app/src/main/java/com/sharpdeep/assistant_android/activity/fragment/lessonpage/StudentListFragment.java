@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,13 @@ import android.widget.Toast;
 
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapter;
+import com.hanks.htextview.HTextView;
 import com.nightonke.boommenu.BoomMenuButton;
 import com.nightonke.boommenu.Types.BoomType;
 import com.nightonke.boommenu.Types.ButtonType;
 import com.nightonke.boommenu.Types.PlaceType;
 import com.nightonke.boommenu.Util;
+import com.orhanobut.logger.Logger;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.activity.LessonHomePageActivity;
 import com.sharpdeep.assistant_android.activity.LessonSignlogActivity;
@@ -31,6 +34,7 @@ import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.listener.WindowFocusChangedListener;
 import com.sharpdeep.assistant_android.model.eventModel.LessonEvent;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
+import com.sharpdeep.assistant_android.model.resultModel.Schedule;
 import com.sharpdeep.assistant_android.model.resultModel.Student;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
@@ -55,6 +59,7 @@ import retrofit.Retrofit;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -72,6 +77,10 @@ public class StudentListFragment extends LessonPageBaseFragment {
     @Bind(R.id.check_in_boom_menu)
     BoomMenuButton mBMBCheckInBtn;
 
+    TextView mTxtLessonLike;
+
+    private int mLikeCount = 0;
+
     //编译Apk时候提示需要无参构造函数，不要删除
     public StudentListFragment(){
     }
@@ -81,7 +90,11 @@ public class StudentListFragment extends LessonPageBaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_lesson_studentlist,container,false);
         ButterKnife.bind(this, view);
+
+        mTxtLessonLike = (TextView) getActivity().findViewById(R.id.txt_lesson_like);
         setupStudenListView(view);
+
+        getLessonLikeCount();
 
         ((LessonHomePageActivity)getContext()).setOnWindowFocusChangedListener(new WindowFocusChangedListener() {
             @Override
@@ -121,10 +134,11 @@ public class StudentListFragment extends LessonPageBaseFragment {
 
     private void initStudentBMB() {
         int[] drawablesResource = new int[]{
+                R.drawable.ic_action_action_like,
                 R.drawable.ic_image_sign_white_128,
                 R.drawable.ic_image_leave_white_128
         };
-        String[] subBtnTexts = new String[]{"签到","请假"};
+        String[] subBtnTexts = new String[]{"点赞","签到","请假"};
         int[][] subBtnColors = new int[drawablesResource.length][2];
         Drawable[] subBtnDrawables = new Drawable[drawablesResource.length];
 
@@ -144,7 +158,7 @@ public class StudentListFragment extends LessonPageBaseFragment {
                 subBtnColors,    // The colors of sub buttons, including pressed-state and normal-state.
                 ButtonType.CIRCLE,     // The button type.
                 BoomType.PARABOLA,  // The boom type.
-                PlaceType.CIRCLE_2_1,  // The place type.
+                PlaceType.CIRCLE_3_4,  // The place type.
                 null,               // Ease type to move the sub buttons when showing.
                 null,               // Ease type to scale the sub buttons when showing.
                 null,               // Ease type to rotate the sub buttons when showing.
@@ -160,10 +174,14 @@ public class StudentListFragment extends LessonPageBaseFragment {
             public void onClick(int buttonIndex) {
                 switch (buttonIndex){
                     case 0:
+                        L.d("点赞");
+                        likeLesson(getLessonId());
+                        break;
+                    case 1:
                         L.d("签到");
                         signin();
                         break;
-                    case 1:
+                    case 2:
                         L.d("请假");
                         askLeave();
                         break;
@@ -229,6 +247,42 @@ public class StudentListFragment extends LessonPageBaseFragment {
         mBMBInit = true;
     }
 
+    private void likeLesson(String lessonId){
+        Retrofit retrofit = RetrofitHelper.getRetrofit(getActivity());
+
+        LoadingDialog loadingDialog = new LoadingDialog(getActivity());
+        loadingDialog.setDismissObservable(
+                retrofit.create(AssistantService.class)
+                        .likeLesson(DataCacher.getInstance().getToken(),lessonId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map(new Func1<BaseResult, Boolean>() {
+                            @Override
+                            public Boolean call(BaseResult baseResult) {
+                                if (baseResult.isSuccess()){
+                                    refreshLikeCountView(mLikeCount+1);
+                                    new AlertDialog(getActivity())
+                                            .alert("成功点赞");
+                                }else{
+                                    new AlertDialog(getActivity())
+                                            .alert(baseResult.getMsg());
+                                }
+                                return true;
+                            }
+                        })
+        )
+                .setErrorHandler(new LoadingDialog.ErrorHandler() {
+                    @Override
+                    public void handler(Throwable e) {
+                        L.d(e.toString());
+                        e.printStackTrace();
+                        ToastUtil.show(getActivity(),"请检查网络设置");
+                    }
+                })
+                .show("点赞中……");
+
+    }
+
     private void pickRandomStudent() {
         if (mStudentList != null && mStudentList.size() > 0){
             RandomStudentPickerDialog dialog = new RandomStudentPickerDialog(getActivity());
@@ -236,6 +290,32 @@ public class StudentListFragment extends LessonPageBaseFragment {
         }else {
             ToastUtil.show(getActivity(),"没有获取到学生列表");
         }
+    }
+
+    private void getLessonLikeCount(){
+        Retrofit retrofit = RetrofitHelper.getRetrofit(getActivity());
+        retrofit.create(AssistantService.class)
+                .getLessonLikeCount(getLessonId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<BaseResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d("获取点赞人数时出错");
+                    }
+
+                    @Override
+                    public void onNext(BaseResult baseResult) {
+                        if (baseResult.isSuccess()){
+                            refreshLikeCountView(Integer.valueOf(baseResult.getMsg()));
+                        }
+                    }
+                });
     }
 
     public void getStudentListThenUpdate(final View view) {
@@ -287,7 +367,7 @@ public class StudentListFragment extends LessonPageBaseFragment {
         );
         dialog.setErrorHandler(new LoadingDialog.ErrorHandler() {
             @Override
-            public void handler() {
+            public void handler(Throwable e) {
                 new AlertDialog(getContext()).alert("服务器或网络出了点问题");
             }
         });
@@ -304,7 +384,7 @@ public class StudentListFragment extends LessonPageBaseFragment {
         final LoadingDialog dialog = new LoadingDialog(getContext());
         dialog.setErrorHandler(new LoadingDialog.ErrorHandler() {
             @Override
-            public void handler() {
+            public void handler(Throwable e) {
                 new AlertDialog(getContext()).alert("服务器或者网络出了点问题");
             }
         });
@@ -331,6 +411,11 @@ public class StudentListFragment extends LessonPageBaseFragment {
         });
         askLeaveDialog.show();
 
+    }
+
+    private void refreshLikeCountView(int count){
+        mLikeCount = count;
+        mTxtLessonLike.setText(mLikeCount+"人点赞");
     }
 
     private class RecyclerViewAdapter extends RecyclerView.Adapter<StudentViewHolder> {
