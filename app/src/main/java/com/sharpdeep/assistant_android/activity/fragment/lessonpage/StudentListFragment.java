@@ -37,9 +37,11 @@ import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.EventBusUtil;
 import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.util.ProjectUtil;
+import com.sharpdeep.assistant_android.util.ToastUtil;
 import com.sharpdeep.assistant_android.view.AlertDialog;
 import com.sharpdeep.assistant_android.view.AskLeaveDialog;
 import com.sharpdeep.assistant_android.view.LoadingDialog;
+import com.sharpdeep.assistant_android.view.RandomStudentPickerDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -219,12 +221,21 @@ public class StudentListFragment extends LessonPageBaseFragment {
                         break;
                     case 1:
                         L.d("点名");
-//                        askLeave();
+                        pickRandomStudent();
                         break;
                 }
             }
         });
         mBMBInit = true;
+    }
+
+    private void pickRandomStudent() {
+        if (mStudentList != null && mStudentList.size() > 0){
+            RandomStudentPickerDialog dialog = new RandomStudentPickerDialog(getActivity());
+            dialog.show(mStudentList);
+        }else {
+            ToastUtil.show(getActivity(),"没有获取到学生列表");
+        }
     }
 
     public void getStudentListThenUpdate(final View view) {
