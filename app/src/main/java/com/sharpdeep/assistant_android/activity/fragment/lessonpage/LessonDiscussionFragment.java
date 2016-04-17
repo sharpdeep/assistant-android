@@ -29,21 +29,25 @@ import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
 import com.sharpdeep.assistant_android.model.resultModel.Discussion;
 import com.sharpdeep.assistant_android.model.resultModel.DiscussionResult;
 import com.sharpdeep.assistant_android.model.resultModel.Schedule;
+import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.util.ToastUtil;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.drakeet.materialdialog.MaterialDialog;
 import retrofit.Retrofit;
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -85,17 +89,15 @@ public class LessonDiscussionFragment extends LessonPageBaseFragment {
 
         mFabAddDiscussion.attachToRecyclerView(mViewDiscussionMsgList);
 
-//        mRefreshControler.setRefreshing(true);
-        syncDiscussion();
+        showCacheDiscussion();
 
-//        mRefreshControler.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                syncDiscussion();
-//            }
-//        });
+        mRefreshControler.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                syncDiscussion();
+            }
+        });
 
-//        syncDiscussion();
     }
 
     @OnClick(R.id.fab_add_discussion)
@@ -145,8 +147,22 @@ public class LessonDiscussionFragment extends LessonPageBaseFragment {
         retrofit.create(AssistantService.class)
                 .makeLessonDiscussion(getLessonId(),fromUserName,message)
                 .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map(new Func1<BaseResult, Discussion>() {
+                    @Override
+                    public Discussion call(BaseResult baseResult) {
+                        if (baseResult.isSuccess()){
+                            //发表成功，本地保存
+                            Discussion discussion = new Discussion(fromUserName,getLessonId(),message);
+                            com.sharpdeep.assistant_android.model.dbModel.Discussion dbDiscussion = new com.sharpdeep.assistant_android.model.dbModel.Discussion();
+                            dbDiscussion.saveToDB(discussion);
+                            return discussion;
+                        }
+                        return null;
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<BaseResult>() {
+                .subscribe(new Subscriber<Discussion>() {
                     @Override
                     public void onCompleted() {
 
@@ -158,14 +174,13 @@ public class LessonDiscussionFragment extends LessonPageBaseFragment {
                     }
 
                     @Override
-                    public void onNext(BaseResult baseResult) {
-                        if (baseResult.isSuccess()){
+                    public void onNext(Discussion discussion) {
+                        if (discussion == null){
+                            ToastUtil.show(getActivity(),"发表失败");
+                        }else{
                             ToastUtil.show(getActivity(),"发表成功");
-                            Discussion discussion = new Discussion(fromUserName,getLessonId(),message);
                             mDiscussionList.add(discussion);
                             mAdapter.notifyDataSetChanged();
-                        }else{
-                            ToastUtil.show(getActivity(),baseResult.getMsg());
                         }
                     }
                 });
@@ -178,8 +193,25 @@ public class LessonDiscussionFragment extends LessonPageBaseFragment {
         retrofit.create(AssistantService.class)
                 .getLessonDiscussionAfter(getLessonId(),getCacheDiscussionSize())
                 .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map(new Func1<DiscussionResult, Boolean>() {
+                    @Override
+                    public Boolean call(DiscussionResult discussionResult) {
+                        if (discussionResult.isSuccess() && !discussionResult.getDiscussionList().isEmpty()){
+                            //有新数据,先缓存到数据库中
+                            for (Discussion discussion : discussionResult.getDiscussionList()){
+                                com.sharpdeep.assistant_android.model.dbModel.Discussion dbDiscussion = new com.sharpdeep.assistant_android.model.dbModel.Discussion();
+                                dbDiscussion.saveToDB(discussion);
+                            }
+                            //更新数据集
+                            mDiscussionList.addAll(discussionResult.getDiscussionList());
+                            return true;
+                        }
+                        return false;
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<DiscussionResult>() {
+                .subscribe(new Subscriber<Boolean>() {
                     @Override
                     public void onCompleted() {
                         mRefreshControler.setRefreshing(false);
@@ -192,21 +224,55 @@ public class LessonDiscussionFragment extends LessonPageBaseFragment {
                     }
 
                     @Override
-                    public void onNext(DiscussionResult discussionResult) {
-                        if (discussionResult.isSuccess()){
-                            mDiscussionList.addAll(discussionResult.getDiscussionList());
+                    public void onNext(Boolean needRefresh) {
+                        if (needRefresh){
                             mAdapter.notifyDataSetChanged();
                         }else {
-                            ToastUtil.show(getActivity(),"同步讨论失败");
+                            ToastUtil.show(getActivity(),"没有新数据");
                         }
                     }
                 });
     }
 
     public int getCacheDiscussionSize(){
-        return 0;
+        return mDiscussionList.size();
     }
 
+    public void showCacheDiscussion(){
+        Observable.create(new Observable.OnSubscribe<Discussion>() {
+            @Override
+            public void call(Subscriber<? super Discussion> subscriber) {
+                List<com.sharpdeep.assistant_android.model.dbModel.Discussion> dbDiscussionList = com.sharpdeep.assistant_android.model.dbModel.Discussion.find(
+                        com.sharpdeep.assistant_android.model.dbModel.Discussion.class,
+                        "to_user_name = ?",
+                        getLessonId());
+                for (com.sharpdeep.assistant_android.model.dbModel.Discussion dbDiscussion : dbDiscussionList){
+                    subscriber.onNext(dbDiscussion.loadDiscussion());
+                }
+                subscriber.onCompleted();
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Discussion>() {
+                    @Override
+                    public void onCompleted() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d(e.toString());
+                        e.printStackTrace();
+                        ToastUtil.show(getActivity(),"读取数据库失败");
+                    }
+
+                    @Override
+                    public void onNext(Discussion discussion) {
+                        mDiscussionList.add(discussion);
+                    }
+                });
+    }
 
     class DiscussionMsgListAdapter extends RecyclerView.Adapter<MsgItemHolder>{
 
