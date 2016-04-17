@@ -4,19 +4,18 @@
     android:layout_height="match_parent"
     android:layout_marginTop="@dimen/activity_vertical_margin">
 
-    <LinearLayout
+
+    <com.baoyz.widget.PullRefreshLayout
+        android:id="@+id/lesson_discussion_refresh_controler"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.baoyz.widget.PullRefreshLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/listView_lessondiscussion"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/listView_lessondiscussion"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </android.support.v7.widget.RecyclerView>
-        </com.baoyz.widget.PullRefreshLayout>
-    </LinearLayout>
+        </android.support.v7.widget.RecyclerView>
+    </com.baoyz.widget.PullRefreshLayout>
+
 
     <com.melnykov.fab.FloatingActionButton
         android:id="@+id/fab_add_discussion"

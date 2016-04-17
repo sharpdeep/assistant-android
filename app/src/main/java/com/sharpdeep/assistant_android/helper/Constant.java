@@ -15,6 +15,8 @@ public class Constant {
     public static final int LEAVE_SICK = 1; //病假
     public static final int LEAVE_AFFAIR = 2; //事假
 
+    public static final String ANONYMOUS_NAME = "匿名";
+
     public static String getLeaveTypeName(int type){
         switch (type){
             case LEAVE_OTHER:

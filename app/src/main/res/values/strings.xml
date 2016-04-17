@@ -14,8 +14,8 @@
     <string name="toolbar_title_student_leavelog">我的请假记录</string>
     <string name="toolbar_title_lesson_signlog">课程考勤</string>
 
-    <!--<string name="base_url">http://192.168.1.103:5000</string>-->
-    <string name="base_url">http://10.21.30.35:5000</string>
+    <string name="base_url">http://192.168.1.106:5000</string>
+    <!--<string name="base_url">http://10.21.30.35:5000</string>-->
 
     <string name="home_page">首页</string>
     <string name="oa_page">办公自动化</string>
@@ -29,7 +29,7 @@
     <string name="exit">注销</string>
 
     <string name="lesson_homepage_page1">学生列表</string>
-    <string name="lesson_homepage_page2">笔记区</string>
+    <string name="lesson_homepage_page2">讨论区</string>
     <string name="lesson_homepage_page3">作业区</string>
 
     <string name="bottom_sheet_01">导入课表</string>

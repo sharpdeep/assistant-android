@@ -4,6 +4,7 @@ package com.sharpdeep.assistant_android.api;
 import com.sharpdeep.assistant_android.model.resultModel.AuthResult;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
+import com.sharpdeep.assistant_android.model.resultModel.DiscussionResult;
 import com.sharpdeep.assistant_android.model.resultModel.LessonInfoResult;
 import com.sharpdeep.assistant_android.model.resultModel.LessonSignlogResult;
 import com.sharpdeep.assistant_android.model.resultModel.LeavelogResult;
@@ -16,7 +17,9 @@ import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
+import retrofit.http.Query;
 import rx.Observable;
 
 /**
@@ -73,4 +76,11 @@ public interface AssistantService {
 
     @GET(prefix+"/like/lesson/{classid}")
     Observable<BaseResult> getLessonLikeCount(@Path("classid") String classid);
+
+    @FormUrlEncoded()
+    @PUT(prefix+"/discussion/lesson/{classid}")
+    Observable<BaseResult> makeLessonDiscussion(@Path("classid") String classid,@Field("fromUserName") String fromUserName, @Field("content") String content);
+
+    @GET(prefix+"/discussion/lesson/{classid}")
+    Observable<DiscussionResult> getLessonDiscussionAfter(@Path("classid") String classid,@Query("after") int after_index);
 }

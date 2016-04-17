@@ -16,14 +16,47 @@
     <LinearLayout
         android:padding="16dp"
         android:layout_gravity="center"
+        android:orientation="vertical"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/lesson_discussion_fromUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="匿名"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="#40b3b3b3"/>
+
         <TextView
             android:id="@+id/textview_lessondiscussion_msg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="13sp"
+            android:text="Hello world"
             android:textStyle="bold"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="#40b3b3b3"/>
+
+        <TextView
+            android:id="@+id/lesson_discussion_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|right"
+            android:textSize="10sp"
+            android:text="2016-04-17 04:20:35"/>
+
     </LinearLayout>
 </android.support.v7.widget.CardView>
