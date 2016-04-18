@@ -12,6 +12,7 @@ import com.github.florent37.materialviewpager.header.HeaderDesign;
 import com.hanks.htextview.HTextView;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.activity.fragment.lessonpage.LessonDiscussionFragment;
+import com.sharpdeep.assistant_android.activity.fragment.lessonpage.LessonHomeworkFragment;
 import com.sharpdeep.assistant_android.activity.fragment.lessonpage.StudentListFragment;
 import com.sharpdeep.assistant_android.helper.DataCacher;
 import com.sharpdeep.assistant_android.listener.WindowFocusChangedListener;
@@ -113,8 +114,9 @@ public class LessonHomePageActivity  extends AppCompatActivity{
                     StudentListFragment fragment = new StudentListFragment();
                     return fragment;
                 case 1:
-                case 2:
                     return new LessonDiscussionFragment();
+                case 2:
+                    return new LessonHomeworkFragment();
             }
 
             return null;

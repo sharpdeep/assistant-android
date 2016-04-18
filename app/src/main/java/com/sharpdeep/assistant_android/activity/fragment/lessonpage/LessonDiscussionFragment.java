@@ -264,7 +264,7 @@ public class LessonDiscussionFragment extends LessonPageBaseFragment {
                     public void onError(Throwable e) {
                         L.d(e.toString());
                         e.printStackTrace();
-                        ToastUtil.show(getActivity(),"读取数据库失败");
+                        ToastUtil.show(getActivity(),"读取讨论数据库失败");
                     }
 
                     @Override

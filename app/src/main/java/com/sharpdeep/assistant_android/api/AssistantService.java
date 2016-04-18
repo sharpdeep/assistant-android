@@ -5,6 +5,8 @@ import com.sharpdeep.assistant_android.model.resultModel.AuthResult;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
 import com.sharpdeep.assistant_android.model.resultModel.DiscussionResult;
+import com.sharpdeep.assistant_android.model.resultModel.Homework;
+import com.sharpdeep.assistant_android.model.resultModel.HomeworkResult;
 import com.sharpdeep.assistant_android.model.resultModel.LessonInfoResult;
 import com.sharpdeep.assistant_android.model.resultModel.LessonSignlogResult;
 import com.sharpdeep.assistant_android.model.resultModel.LeavelogResult;
@@ -83,4 +85,11 @@ public interface AssistantService {
 
     @GET(prefix+"/discussion/lesson/{classid}")
     Observable<DiscussionResult> getLessonDiscussionAfter(@Path("classid") String classid,@Query("after") int after_index);
+
+    @FormUrlEncoded()
+    @PUT(prefix+"/homework/{classid}")
+    Observable<BaseResult> makeHomework(@Header("Authorization") String token,@Path("classid") String classid,@Field("title") String title, @Field("content") String content, @Field("deadline") String deadline);
+
+    @GET(prefix+"/homework/{classid}")
+    Observable<HomeworkResult> getHomeworkAfter(@Path("classid") String classid, @Query("after") int after_index);
 }

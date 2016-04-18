@@ -49,4 +49,17 @@ public class DateUtil {
         SimpleDateFormat formater = new SimpleDateFormat(dateFormat);
         return formater.format(date);
     }
+
+    public static String convertDateStrFormat(String dateStr,String fromFormat,String toFormat){
+        SimpleDateFormat fromFormater = new SimpleDateFormat(fromFormat);
+        SimpleDateFormat toFormater = new SimpleDateFormat(toFormat);
+        String toDateStr = "";
+        try {
+            Date fromDate = fromFormater.parse(dateStr);
+            toDateStr =  toFormater.format(fromDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return toDateStr;
+    }
 }
