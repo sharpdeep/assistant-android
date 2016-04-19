@@ -498,7 +498,7 @@ public class StudentListFragment extends LessonPageBaseFragment {
     }
 
     private String getDeviceId(){
-        return "123";
+        return AndroidUtil.getDeviceId();
     }
 
     private String getWifiMac(){

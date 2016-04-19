@@ -92,4 +92,12 @@ public interface AssistantService {
 
     @GET(prefix+"/homework/{classid}")
     Observable<HomeworkResult> getHomeworkAfter(@Path("classid") String classid, @Query("after") int after_index);
+
+    @GET(prefix+"/device")
+    Observable<BaseResult> getBindingDeviceIds(@Header("Authorization") String token);
+
+    @FormUrlEncoded()
+    @PUT(prefix+"/device")
+    Observable<BaseResult> bindDevice(@Header("Authorization") String token,@Field("deviceid") String deviceid);
+
 }

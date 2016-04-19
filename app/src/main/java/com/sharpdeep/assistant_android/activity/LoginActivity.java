@@ -18,6 +18,7 @@ import com.roger.psdloadingview.library.animate.EatAnimate;
 import com.roger.psdloadingview.library.animate.TranslationX2Animate;
 import com.roger.psdloadingview.library.animate.TranslationXAnimate;
 import com.sharpdeep.assistant_android.R;
+import com.sharpdeep.assistant_android.api.AssistantClient;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.helper.DataCacher;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -232,7 +234,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startActivityAndFinsh(Class to){
-        AndroidUtil.startActivity(this, to);
+        Map data = new HashMap();
+        data.put("from","login");
+        AndroidUtil.startActivityWithExtraStr(this,to,data);
         this.finish();
     }
 }

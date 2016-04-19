@@ -1,6 +1,7 @@
 package com.sharpdeep.assistant_android;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.orm.SugarApp;
 import com.sharpdeep.assistant_android.util.L;
@@ -13,10 +14,12 @@ import java.util.List;
  */
 public class MyApplication extends SugarApp {
     private List<Activity> activityList = new ArrayList<>();
+    private static Context mContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext = getApplicationContext();
     }
 
     public void addActivity(Activity activity){
@@ -29,5 +32,9 @@ public class MyApplication extends SugarApp {
         for (Activity activity : activityList){
             activity.finish();
         }
+    }
+
+    public static Context getContext(){
+        return mContext;
     }
 }

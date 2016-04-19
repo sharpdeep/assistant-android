@@ -44,7 +44,9 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.orm.query.Condition;
 import com.orm.query.Select;
+import com.sharpdeep.assistant_android.MyApplication;
 import com.sharpdeep.assistant_android.R;
+import com.sharpdeep.assistant_android.api.AssistantClient;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.helper.Constant;
 import com.sharpdeep.assistant_android.helper.DataCacher;
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity{
 
     private boolean mBackClicked = false;
     private HashMap<Integer,Integer> mDrawerItemIdentify = new HashMap<>();
+    private String myDeviceId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +133,92 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         init();
 
+        Bundle bundle = this.getIntent().getExtras();
+        if (bundle.containsKey("from") && "login".equals(bundle.getString("from"))){
+            checkDeviceBinding();
+        }
+    }
+
+    private void checkDeviceBinding() {
+        AssistantClient.getServiceInstance()
+                .getBindingDeviceIds(DataCacher.getInstance().getToken())
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map(new Func1<BaseResult, Boolean>() {
+                    @Override
+                    public Boolean call(BaseResult baseResult) {
+                        if (baseResult.isSuccess()){
+                            myDeviceId = AndroidUtil.getDeviceId();
+                            String[] deviceIds = baseResult.getMsg().split("/");
+                            for (String id : deviceIds){
+                                L.d(id+"-"+deviceIds.length);
+                                if (id.equals(myDeviceId)){
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d(e.toString());
+                        ToastUtil.show(MainActivity.this,"请检查网络设置");
+                    }
+
+                    @Override
+                    public void onNext(Boolean needBind) {
+                        if (needBind){
+                            final MaterialDialog dialog = new MaterialDialog(MainActivity.this);
+                            dialog.setTitle("绑定设备")
+                                    .setMessage(R.string.bind_device_alert)
+                                    .setPositiveButton("绑定", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            dialog.dismiss();
+                                            bindDevice();
+                                        }
+                                    })
+                                    .show();
+                        }
+                    }
+                });
+    }
+
+    private void bindDevice(){
+        AssistantClient.getServiceInstance()
+                .bindDevice(DataCacher.getInstance().getToken(),AndroidUtil.getDeviceId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<BaseResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        L.d(e.toString());
+                        ToastUtil.show(MainActivity.this,"请检查网络设置");
+                    }
+
+                    @Override
+                    public void onNext(BaseResult baseResult) {
+                        if (baseResult.isSuccess()){
+                            ToastUtil.show(MainActivity.this,"绑定成功");
+                        }else{
+                            ToastUtil.show(MainActivity.this,baseResult.getMsg());
+                        }
+                    }
+                });
     }
 
     private void init() {

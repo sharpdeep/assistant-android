@@ -3,6 +3,10 @@ package com.sharpdeep.assistant_android.util;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telecom.TelecomManager;
+import android.telephony.TelephonyManager;
+
+import com.sharpdeep.assistant_android.MyApplication;
 
 import java.io.FileReader;
 import java.util.Map;
@@ -28,5 +32,10 @@ public class AndroidUtil {
 
         it.putExtras(bundle);
         from.startActivity(it);
+    }
+
+    public final static String getDeviceId(){
+        TelephonyManager manager = (TelephonyManager) MyApplication.getContext().getSystemService(MyApplication.getContext().TELEPHONY_SERVICE);
+        return manager.getDeviceId();
     }
 }

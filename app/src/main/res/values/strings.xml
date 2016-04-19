@@ -47,4 +47,5 @@
     <string name="lesson_search_dialog_button">查找</string>
     <string name="lesson_search_dialog_hint">请先查找到相应课程再添加</string>
 
+    <string name="bind_device_alert">检测到当前设备还没有绑定账号,是否绑定当前账号？\n\n注意：一个设备只能绑定一个账号,绑定设备与签到关联，请谨慎操作!!</string>
 </resources>

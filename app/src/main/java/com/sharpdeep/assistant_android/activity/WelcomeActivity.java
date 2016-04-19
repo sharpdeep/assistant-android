@@ -24,7 +24,9 @@ import com.sharpdeep.assistant_android.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
@@ -221,7 +223,9 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void startActivityAndFinsh(Class toActivity){
-        AndroidUtil.startActivity(this,toActivity);
+        Map data = new HashMap();
+        data.put("from","welcome");
+        AndroidUtil.startActivityWithExtraStr(this,toActivity,data);
         this.finish();
     }
 }
