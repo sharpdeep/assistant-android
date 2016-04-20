@@ -42,12 +42,12 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
         //根据日期分组
         HashMap<String,ArrayList<Leavelog>> map = new HashMap<>();
         for (Leavelog log : studentLeavelogList){
-            if (map.containsKey(log.getDate())){
-                map.get(log.getDate()).add(log);
+            if (map.containsKey(log.getLeaveDate())){
+                map.get(log.getLeaveDate()).add(log);
             }else{
                 ArrayList<Leavelog> list = new ArrayList<>();
                 list.add(log);
-                map.put(log.getDate(),list);
+                map.put(log.getLeaveDate(),list);
             }
         }
         //对HashMap根据key(Date)排序
@@ -119,7 +119,7 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
             convertView.setTag(holder);
         }
         holder = (GroupViewHolder) convertView.getTag();
-        String dateStr = mLeavelogs.get(groupPosition).get(0).getDate();
+        String dateStr = mLeavelogs.get(groupPosition).get(0).getLeaveDate();
         holder.sectionName.setText(dateStr+" "+ DateUtil.getWeekStrByDateStr(dateStr, "yyyyMMdd"));
         return convertView;    }
 

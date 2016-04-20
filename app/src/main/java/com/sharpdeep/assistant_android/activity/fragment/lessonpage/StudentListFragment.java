@@ -40,6 +40,7 @@ import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.EventBusUtil;
 import com.sharpdeep.assistant_android.util.L;
+import com.sharpdeep.assistant_android.util.NetUtil;
 import com.sharpdeep.assistant_android.util.ProjectUtil;
 import com.sharpdeep.assistant_android.util.ToastUtil;
 import com.sharpdeep.assistant_android.view.AlertDialog;
@@ -49,6 +50,7 @@ import com.sharpdeep.assistant_android.view.RandomStudentPickerDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
@@ -348,6 +350,12 @@ public class StudentListFragment extends LessonPageBaseFragment {
 
     //签到
     private void signin(){
+        //// TODO: 16-4-19 签到网络检测，为了方便测试，将其注释，正式发布改回来改回来
+//        if (!NetUtil.connectSSID(getContext(),"STU")){
+//            ToastUtil.show(getActivity(),"请先连接STU网络再签到");
+//            return;
+//        }
+
         Retrofit retrofit = RetrofitHelper.getRetrofit(getContext());
 
         LoadingDialog dialog = new LoadingDialog(getContext());
@@ -503,6 +511,12 @@ public class StudentListFragment extends LessonPageBaseFragment {
 
     private String getWifiMac(){
         return "mac";
+        //// TODO: 16-4-19 真实获取bssid的代码为了方便测试被注释
+//        Map<String,String> wifiInfo = NetUtil.getWifiInfo(getContext());
+//        if (wifiInfo != null){
+//            return wifiInfo.get("BSSID");
+//        }
+//        return "";
     }
 
 

@@ -83,7 +83,7 @@ public class StudentLeavelogActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        L.d("刷新学生签到记录时候出错" + e.toString());
+                        L.d("刷新学生请假记录时候出错" + e.toString());
                         e.printStackTrace();
                         ToastUtil.show(StudentLeavelogActivity.this, "网络可能出了点问题");
                         mRefreshControl.setRefreshing(false);

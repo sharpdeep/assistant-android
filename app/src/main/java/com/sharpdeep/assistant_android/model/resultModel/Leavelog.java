@@ -30,9 +30,21 @@ public class Leavelog {
     @SerializedName("studentname")
     @Expose
     private String studentname;
+    @SerializedName("verify")
+    @Expose
+    private Boolean verify;
+
+    public Boolean getVerify() {
+        return verify;
+    }
+
+    public void setVerify(Boolean verify) {
+        this.verify = verify;
+    }
 
     /**
-     * 
+     *
+
      * @return
      *     The classid
      */

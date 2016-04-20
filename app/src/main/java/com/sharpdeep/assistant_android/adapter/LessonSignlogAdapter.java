@@ -53,7 +53,9 @@ public class LessonSignlogAdapter extends BaseExpandableListAdapter {
             map.remove(log.getStudentName());
         }
         for (Leavelog log : leavelogs){
-            map.remove(log.getStudentname());
+            if (log.getVerify()){
+                map.remove(log.getStudentname());
+            }
         }
         updateData(map,dateStr);
     }
