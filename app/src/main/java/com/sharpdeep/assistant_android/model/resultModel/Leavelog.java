@@ -34,14 +34,6 @@ public class Leavelog {
     @Expose
     private Boolean verify;
 
-    public Boolean getVerify() {
-        return verify;
-    }
-
-    public void setVerify(Boolean verify) {
-        this.verify = verify;
-    }
-
     /**
      *
 
@@ -187,4 +179,21 @@ public class Leavelog {
         this.studentname = studentname;
     }
 
+    /**
+     *
+     * @return
+     * The verify
+     */
+    public Boolean getVerify() {
+        return verify;
+    }
+
+    /**
+     *
+     * @param verify
+     * The verify
+     */
+    public void setVerify(Boolean verify) {
+        this.verify = verify;
+    }
 }

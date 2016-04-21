@@ -21,10 +21,13 @@ import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.activity.MainActivity;
 import com.sharpdeep.assistant_android.activity.StudentLeavelogActivity;
 import com.sharpdeep.assistant_android.activity.StudentSignlogActivity;
+import com.sharpdeep.assistant_android.api.AssistantClient;
 import com.sharpdeep.assistant_android.api.AssistantService;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
+import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
+import com.sharpdeep.assistant_android.util.ProjectUtil;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -151,23 +154,41 @@ public class DrawerHelper {
                         .withIcon(R.drawable.profile))
                 .build();
 
-        mDrawer = new DrawerBuilder()
-                .withActivity(activity)
-                .withToolbar(toolbar)
-                .withAccountHeader(accountHeader)
-                .addDrawerItems(
-                        homeItem,
-                        oaItem,
-                        new DividerDrawerItem(),
-                        signlogItem,
-                        leavelogItem,
-                        new DividerDrawerItem(),
-                        settingItem,
-                        suggestionItem,
-                        new DividerDrawerItem(),
-                        exitItem
-                )
-                .build();
+        if (ProjectUtil.isTeacher(DataCacher.getInstance().getIdentify())){
+            mDrawer = new DrawerBuilder()
+                    .withActivity(activity)
+                    .withToolbar(toolbar)
+                    .withAccountHeader(accountHeader)
+                    .addDrawerItems(
+                            homeItem,
+                            oaItem,
+                            new DividerDrawerItem(),
+                            settingItem,
+                            suggestionItem,
+                            new DividerDrawerItem(),
+                            exitItem
+                    )
+                    .build();
+        }else{
+            mDrawer = new DrawerBuilder()
+                    .withActivity(activity)
+                    .withToolbar(toolbar)
+                    .withAccountHeader(accountHeader)
+                    .addDrawerItems(
+                            homeItem,
+                            oaItem,
+                            new DividerDrawerItem(),
+                            signlogItem,
+                            leavelogItem,
+                            new DividerDrawerItem(),
+                            settingItem,
+                            suggestionItem,
+                            new DividerDrawerItem(),
+                            exitItem
+                    )
+                    .build();
+        }
+
         return this;
     }
 
@@ -176,8 +197,10 @@ public class DrawerHelper {
     }
 
     public DrawerHelper updateBadge(){
-        updateStudentSignlogBadge();
-        updateStudentLeaveLogBadge();
+        if (ProjectUtil.isStudent(DataCacher.getInstance().getIdentify())){
+            updateStudentSignlogBadge();
+            updateStudentLeaveLogBadge();
+        }
         return this;
     }
 

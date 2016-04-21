@@ -25,6 +25,7 @@ import com.nightonke.boommenu.Util;
 import com.orhanobut.logger.Logger;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.activity.LessonHomePageActivity;
+import com.sharpdeep.assistant_android.activity.LessonLeavelogActivity;
 import com.sharpdeep.assistant_android.activity.LessonSignlogActivity;
 import com.sharpdeep.assistant_android.activity.StudentSignlogActivity;
 import com.sharpdeep.assistant_android.api.AssistantService;
@@ -34,6 +35,7 @@ import com.sharpdeep.assistant_android.helper.RetrofitHelper;
 import com.sharpdeep.assistant_android.listener.WindowFocusChangedListener;
 import com.sharpdeep.assistant_android.model.eventModel.LessonEvent;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
+import com.sharpdeep.assistant_android.model.resultModel.Lesson;
 import com.sharpdeep.assistant_android.model.resultModel.Schedule;
 import com.sharpdeep.assistant_android.model.resultModel.Student;
 import com.sharpdeep.assistant_android.model.resultModel.StudentListResult;
@@ -49,6 +51,7 @@ import com.sharpdeep.assistant_android.view.LoadingDialog;
 import com.sharpdeep.assistant_android.view.RandomStudentPickerDialog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -196,9 +199,10 @@ public class StudentListFragment extends LessonPageBaseFragment {
     private void initTeacherBMB(){
         int[] drawablesResource = new int[]{
                 R.drawable.ic_image_sign_white_128,
-                R.drawable.ic_action_random
+                R.drawable.ic_action_random,
+                R.drawable.ic_image_leave_white_128
         };
-        String[] subBtnTexts = new String[]{"考勤","点名"};
+        String[] subBtnTexts = new String[]{"考勤","点名","请假"};
         int[][] subBtnColors = new int[drawablesResource.length][2];
         Drawable[] subBtnDrawables = new Drawable[drawablesResource.length];
 
@@ -218,7 +222,7 @@ public class StudentListFragment extends LessonPageBaseFragment {
                 subBtnColors,    // The colors of sub buttons, including pressed-state and normal-state.
                 ButtonType.CIRCLE,     // The button type.
                 BoomType.PARABOLA,  // The boom type.
-                PlaceType.CIRCLE_2_1,  // The place type.
+                PlaceType.CIRCLE_3_4,  // The place type.
                 null,               // Ease type to move the sub buttons when showing.
                 null,               // Ease type to scale the sub buttons when showing.
                 null,               // Ease type to rotate the sub buttons when showing.
@@ -232,16 +236,23 @@ public class StudentListFragment extends LessonPageBaseFragment {
         mBMBCheckInBtn.setOnSubButtonClickListener(new BoomMenuButton.OnSubButtonClickListener() {
             @Override
             public void onClick(int buttonIndex) {
+                LessonEvent event;
                 switch (buttonIndex){
                     case 0:
                         L.d("考勤");
-                        LessonEvent event = new LessonEvent(getLessonColor(),getLessonName(),getLessonId(),getLessonTeacher(), mStudentList);
+                        event = new LessonEvent(getLessonColor(),getLessonName(),getLessonId(),getLessonTeacher(), mStudentList);
                         EventBusUtil.delayPost(event,1,TimeUnit.SECONDS);
                         AndroidUtil.startActivity(getActivity(), LessonSignlogActivity.class);
                         break;
                     case 1:
                         L.d("点名");
                         pickRandomStudent();
+                        break;
+                    case 2:
+                        L.d("请假管理");
+                        Map<String,String> data = new HashMap<String, String>();
+                        data.put("lessonid",getLessonId());
+                        AndroidUtil.startActivityWithExtraStr(getActivity(),LessonLeavelogActivity.class,data);
                         break;
                 }
             }

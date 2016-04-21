@@ -73,6 +73,9 @@ public interface AssistantService {
     @GET(prefix+"/leavelist/lesson/{classid}/{date}")
     Observable<LeavelogResult> getLessonLeaveLog(@Path("classid") String classid, @Path("date") String date);
 
+    @GET(prefix+"/leavelist/lesson/count/{classid}/{date}")
+    Observable<BaseResult> getLessonLeavelogCount(@Path("classid") String classid,@Path("date") String date);
+
     @POST(prefix+"/like/lesson/{classid}")
     Observable<BaseResult> likeLesson(@Header("Authorization") String token, @Path("classid") String classid);
 
@@ -99,5 +102,9 @@ public interface AssistantService {
     @FormUrlEncoded()
     @PUT(prefix+"/device")
     Observable<BaseResult> bindDevice(@Header("Authorization") String token,@Field("deviceid") String deviceid);
+
+    @FormUrlEncoded()
+    @POST(prefix+"/leave")
+    Observable<BaseResult> verifyLeave(@Header("Authorization") String token,@Field("leaveid") String leaveid, @Field("verify") int verify);
 
 }

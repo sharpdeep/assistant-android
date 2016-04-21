@@ -1,6 +1,7 @@
 package com.sharpdeep.assistant_android.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,28 +21,28 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by bear on 16-4-9.
+ * Created by bear on 16-4-21.
  */
-public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
+public class LessonLeavelogAdapter extends BaseExpandableListAdapter{
     private Context mContext;
-    private ArrayList<ArrayList<Leavelog>> mLeavelogs;
     private LayoutInflater mInflater;
+    private ArrayList<ArrayList<Leavelog>> mLeavelogs;
 
-    public StudentLeavelogAdapter(Context context){
+    public LessonLeavelogAdapter(Context context){
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.mLeavelogs = new ArrayList<>();
     }
 
-    public void updateData(List<Leavelog> studentLeavelogList){
-        mLeavelogs = handleStudentLeavelogList(studentLeavelogList);
+    public void updateData(List<Leavelog> logs){
+        mLeavelogs = handleLessonLeavelogList(logs);
         notifyDataSetChanged();
     }
 
-    private ArrayList<ArrayList<Leavelog>> handleStudentLeavelogList(List<Leavelog> studentLeavelogList){
+    public ArrayList<ArrayList<Leavelog>> handleLessonLeavelogList(List<Leavelog> logs){
         //根据日期分组
         HashMap<String,ArrayList<Leavelog>> map = new HashMap<>();
-        for (Leavelog log : studentLeavelogList){
+        for (Leavelog log : logs){
             if (map.containsKey(log.getLeaveDate())){
                 map.get(log.getLeaveDate()).add(log);
             }else{
@@ -59,13 +60,13 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
             }
         });
 
-        ArrayList<ArrayList<Leavelog>> signlog = new ArrayList<>();
+        ArrayList<ArrayList<Leavelog>> leavelogs = new ArrayList<>();
         //将分组排序好的数据再组装到signlogs中
         for (Map.Entry<String,ArrayList<Leavelog>> entry : list){
-            signlog.add(entry.getValue());
+            leavelogs.add(entry.getValue());
         }
 
-        return signlog;
+        return leavelogs;
     }
 
     @Override
@@ -131,26 +132,37 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
             convertView = mInflater.inflate(R.layout.item_log_content,null);
             holder = new ChildViewHolder();
             holder.content = (TextView) convertView.findViewById(R.id.txt_signlog_content);
+            holder.divider = convertView.findViewById(R.id.log_content_divider);
+            holder.status = (TextView) convertView.findViewById(R.id.log_content_status);
             convertView.setTag(holder);
         }
         holder = (ChildViewHolder) convertView.getTag();
         Leavelog log = mLeavelogs.get(groupPosition).get(childPosition);
         holder.content.setText(
-                        "课程号:\t"+log.getClassid()+
+                "课程号:\t"+log.getClassid()+
                         "\n课程名\t:"+log.getClassname()+
                         "\n\n请假人:\t"+log.getStudentname()+
                         "\n请假人id:\t"+log.getStudentid()+
-                        "\n请假类型:\t"+Constant.getLeaveTypeName(log.getLeaveType())+
+                        "\n请假类型:\t"+ Constant.getLeaveTypeName(log.getLeaveType())+
                         "\n请假时间:\t"+log.getLeaveDate()+DateUtil.getWeekStrByDateStr(log.getLeaveDate(),"yyyyMMdd")+
                         "\n请假原因:\t"+log.getLeaveReason()
 
         );
+        holder.divider.setVisibility(View.VISIBLE);
+        if (log.getVerify()){
+            holder.status.setText("已同意");
+            holder.status.setTextColor(Color.GREEN);
+        }else{
+            holder.status.setText("未同意");
+            holder.status.setTextColor(Color.RED);
+        }
+        holder.status.setVisibility(View.VISIBLE);
         return convertView;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 
     static class GroupViewHolder{
@@ -159,5 +171,9 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
 
     static class ChildViewHolder{
         TextView content;
+        View divider;
+        TextView status;
     }
+
+
 }
