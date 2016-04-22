@@ -1,6 +1,7 @@
 package com.sharpdeep.assistant_android.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,6 +132,8 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
             convertView = mInflater.inflate(R.layout.item_log_content,null);
             holder = new ChildViewHolder();
             holder.content = (TextView) convertView.findViewById(R.id.txt_signlog_content);
+            holder.divider = convertView.findViewById(R.id.log_content_divider);
+            holder.status = (TextView) convertView.findViewById(R.id.log_content_status);
             convertView.setTag(holder);
         }
         holder = (ChildViewHolder) convertView.getTag();
@@ -145,6 +148,15 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
                         "\n请假原因:\t"+log.getLeaveReason()
 
         );
+        holder.divider.setVisibility(View.VISIBLE);
+        if (log.getVerify()){
+            holder.status.setText("已同意");
+            holder.status.setTextColor(Color.GREEN);
+        }else{
+            holder.status.setText("未同意");
+            holder.status.setTextColor(Color.RED);
+        }
+        holder.status.setVisibility(View.VISIBLE);
         return convertView;
     }
 
@@ -159,5 +171,7 @@ public class StudentLeavelogAdapter<T> extends BaseExpandableListAdapter{
 
     static class ChildViewHolder{
         TextView content;
+        View divider;
+        TextView status;
     }
 }
