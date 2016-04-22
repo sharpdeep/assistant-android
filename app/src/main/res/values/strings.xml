@@ -15,8 +15,8 @@
     <string name="toolbar_title_lesson_signlog">课程考勤</string>
     <string name="toolbar_title_lesson_leavelog">请假管理</string>
 
-    <string name="base_url">http://192.168.1.106:5000</string>
-    <!--<string name="base_url">http://10.21.30.35:5000</string>-->
+    <!--<string name="base_url">http://192.168.1.106:5000</string>-->
+    <string name="base_url">http://10.21.30.35:5000</string>
 
     <string name="home_page">首页</string>
     <string name="oa_page">办公自动化</string>
@@ -26,6 +26,8 @@
 
     <string name="setting_page">设置</string>
     <string name="suggestion_page">意见反馈</string>
+
+    <string name="about">关于</string>
 
     <string name="exit">注销</string>
 
@@ -49,4 +51,7 @@
     <string name="lesson_search_dialog_hint">请先查找到相应课程再添加</string>
 
     <string name="bind_device_alert">检测到当前设备还没有绑定账号,是否绑定当前账号？\n\n注意：一个设备只能绑定一个账号,绑定设备与签到关联，请谨慎操作!!</string>
+
+    <string name="about_dialog_title">关于Assistant</string>
+    <string name="about_dialog_content">Assistant  教师上课辅助App\n\n开发者: 12电子 蔡锐深</string>
 </resources>

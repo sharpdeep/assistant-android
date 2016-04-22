@@ -29,6 +29,7 @@ import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.util.ProjectUtil;
 
+import me.drakeet.materialdialog.MaterialDialog;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -47,6 +48,7 @@ public class DrawerHelper {
     public static final int IDENTIFY_SETTING = 5;
     public static final int IDENTIFY_SUGGESTION = 6;
     public static final int IDENTIFY_EXIT = 7;
+    public static final int IDENTIFY_ABOUT = 8;
 
     private DrawerHelper(){}
 
@@ -131,6 +133,20 @@ public class DrawerHelper {
                 })
                 .withSelectedIcon(R.drawable.ic_exit_selected);
 
+        PrimaryDrawerItem aboutItem = new PrimaryDrawerItem()
+                .withName(R.string.about)
+                .withIdentifier(IDENTIFY_ABOUT)
+                .withIcon(R.drawable.ic_action_about)
+                .withSelectable(false)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        showAboutDialog();
+                        return false;
+                    }
+                });
+
+
         AccountHeader accountHeader = new AccountHeaderBuilder()
                 .withActivity(activity)
                 .withHeaderBackground(R.drawable.header)
@@ -165,6 +181,7 @@ public class DrawerHelper {
                             new DividerDrawerItem(),
                             settingItem,
                             suggestionItem,
+                            aboutItem,
                             new DividerDrawerItem(),
                             exitItem
                     )
@@ -183,6 +200,7 @@ public class DrawerHelper {
                             new DividerDrawerItem(),
                             settingItem,
                             suggestionItem,
+                            aboutItem,
                             new DividerDrawerItem(),
                             exitItem
                     )
@@ -254,5 +272,19 @@ public class DrawerHelper {
                         }
                     }
                 });
+    }
+
+    private void showAboutDialog(){
+        final MaterialDialog dialog = new MaterialDialog(this.mActivity);
+        dialog.setTitle(R.string.about_dialog_title)
+                .setMessage(R.string.about_dialog_content)
+                .setPositiveButton("确定", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                })
+                .setCanceledOnTouchOutside(true)
+                .show();
     }
 }
