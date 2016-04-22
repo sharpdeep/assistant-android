@@ -36,3 +36,5 @@ captures/
 *.iml
 
 *.dex
+
+ProjectConfig.java

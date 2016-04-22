@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVAnalytics;
 import com.orm.SugarApp;
 import com.orm.SugarDb;
 import com.orm.SugarRecord;
@@ -117,6 +118,9 @@ public class WelcomeActivity extends AppCompatActivity {
 
 
         authCheck();
+
+        AVAnalytics.trackAppOpened(getIntent());
+
     }
 
     private void authCheck() {
