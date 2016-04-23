@@ -10,6 +10,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVAnalytics;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.feedback.Comment;
+import com.avos.avoscloud.feedback.FeedbackAgent;
+import com.avos.avoscloud.feedback.FeedbackThread;
 import com.orm.SugarApp;
 import com.orm.SugarDb;
 import com.orm.SugarRecord;
@@ -119,8 +124,12 @@ public class WelcomeActivity extends AppCompatActivity {
 
         authCheck();
 
-        AVAnalytics.trackAppOpened(getIntent());
+        LeanCloudInit();
 
+    }
+
+    private void LeanCloudInit() {
+        AVAnalytics.trackAppOpened(getIntent());  //分析组件
     }
 
     private void authCheck() {

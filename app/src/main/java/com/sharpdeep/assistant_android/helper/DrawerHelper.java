@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.avos.avoscloud.feedback.FeedbackAgent;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -61,6 +62,7 @@ public class DrawerHelper {
 
     public DrawerHelper buildin(final Activity activity,Toolbar toolbar){
         this.mActivity = activity;
+        final FeedbackAgent agent = new FeedbackAgent(mActivity);
 
         PrimaryDrawerItem homeItem = new PrimaryDrawerItem()
                 .withName(R.string.home_page)
@@ -116,7 +118,16 @@ public class DrawerHelper {
                 .withName(R.string.suggestion_page)
                 .withIdentifier(IDENTIFY_SUGGESTION)
                 .withIcon(R.drawable.ic_suggestion)
-                .withSelectedIcon(R.drawable.ic_suggestion_selected);
+                .withSelectedIcon(R.drawable.ic_suggestion_selected)
+                .withSelectable(false)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        agent.getDefaultThread().setContact(DataCacher.getInstance().getCurrentUser().getUsername());
+                        agent.startDefaultThreadActivity();
+                        return false;
+                    }
+                });
 
         PrimaryDrawerItem exitItem = new PrimaryDrawerItem()
                 .withName(R.string.exit)

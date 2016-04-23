@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.model.resultModel.Homework;
 import com.sharpdeep.assistant_android.util.DateUtil;
+import com.sharpdeep.assistant_android.util.L;
 
 import org.w3c.dom.Text;
 
@@ -35,7 +36,7 @@ public class HomeworkListAdapter extends RecyclerView.Adapter<HomeworkViewHolder
         Homework homework = this.mHomeworkList.get(mHomeworkList.size()-1-position);
         holder.title.setText(homework.getTitle());
         holder.content.setText(homework.getContent());
-        holder.deadline.setText("截止时间 : "+DateUtil.convertDateStrFormat(homework.getDeadline(),"yyyyMMdd","yyyy年MM月dd日 "+DateUtil.getWeekStrByDateStr(homework.getDeadline(),"yyyyMMdd")));
+        holder.deadline.setText("截止时间 : "+DateUtil.convertDateStrFormat(homework.getDeadline(),"yyyy-MM-dd","yyyy年MM月dd日 "+DateUtil.getWeekStrByDateStr(homework.getDeadline(),"yyyy-MM-dd")));
         holder.time.setText(homework.getCreateTime());
 
     }

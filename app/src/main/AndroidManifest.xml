@@ -60,6 +60,13 @@
         <activity
             android:name=".activity.LessonLeavelogActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <!--LeanCloud相关activity-->
+        <activity
+            android:name="com.avos.avoscloud.feedback.ThreadActivity"
+            android:theme="@android:style/Theme.Holo.Light">
+        </activity>
+
         <meta-data
             android:name="DATABASE"
             android:value="assistant.db" />

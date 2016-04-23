@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.aigestudio.wheelpicker.core.AbstractWheelDecor;
 import com.aigestudio.wheelpicker.core.AbstractWheelPicker;
 import com.aigestudio.wheelpicker.view.WheelCurvedPicker;
+import com.avos.avoscloud.feedback.FeedbackAgent;
 import com.google.gson.Gson;
 import com.melnykov.fab.FloatingActionButton;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -137,6 +138,10 @@ public class MainActivity extends AppCompatActivity{
         if (bundle.containsKey("from") && "login".equals(bundle.getString("from"))){
             checkDeviceBinding();
         }
+
+        FeedbackAgent agent = new FeedbackAgent(this);
+        agent.getDefaultThread().setContact(DataCacher.getInstance().getCurrentUser().getUsername());
+        agent.sync();
     }
 
     private void checkDeviceBinding() {
