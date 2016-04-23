@@ -8,6 +8,7 @@ import android.widget.ExpandableListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVAnalytics;
 import com.melnykov.fab.FloatingActionButton;
 import com.sharpdeep.assistant_android.R;
 import com.sharpdeep.assistant_android.adapter.LessonSignlogAdapter;
@@ -187,5 +188,17 @@ public class LessonSignlogActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(LessonSignlogActivity.this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AVAnalytics.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AVAnalytics.onPause(this);
     }
 }

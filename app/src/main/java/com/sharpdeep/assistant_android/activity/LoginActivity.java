@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVAnalytics;
 import com.roger.psdloadingview.library.PsdLoadingView;
 import com.roger.psdloadingview.library.animate.EatAnimate;
 import com.roger.psdloadingview.library.animate.TranslationX2Animate;
@@ -238,5 +239,17 @@ public class LoginActivity extends AppCompatActivity {
         data.put("from","login");
         AndroidUtil.startActivityWithExtraStr(this,to,data);
         this.finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AVAnalytics.onPause(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AVAnalytics.onResume(this);
     }
 }

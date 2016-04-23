@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.aigestudio.wheelpicker.core.AbstractWheelDecor;
 import com.aigestudio.wheelpicker.core.AbstractWheelPicker;
 import com.aigestudio.wheelpicker.view.WheelCurvedPicker;
+import com.avos.avoscloud.AVAnalytics;
 import com.avos.avoscloud.feedback.FeedbackAgent;
 import com.google.gson.Gson;
 import com.melnykov.fab.FloatingActionButton;
@@ -736,6 +737,13 @@ public class MainActivity extends AppCompatActivity{
         if(this.isFinishing()){
             DataCacher.getInstance().free();
         }
+        AVAnalytics.onPause(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AVAnalytics.onResume(this);
     }
 
     @Override

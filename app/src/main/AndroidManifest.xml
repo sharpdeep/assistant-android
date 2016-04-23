@@ -14,8 +14,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"></uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_LOGS" />
 
     <application
         android:name=".MyApplication"
@@ -66,6 +67,33 @@
             android:name="com.avos.avoscloud.feedback.ThreadActivity"
             android:theme="@android:style/Theme.Holo.Light">
         </activity>
+
+        <!--LeanCloud ChatRoom-->
+        <activity android:name=".chatroom_module.activity.AVLoginActivity"/>
+        <activity
+            android:name=".chatroom_module.activity.AVSquareActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
+            android:theme="@style/ChatAppTheme"/>
+
+        <activity android:name=".chatroom_module.activity.AVSquareMembersActivity"
+            android:theme="@style/ChatAppTheme"/>
+        <activity
+            android:name=".chatroom_module.activity.AVSingleChatActivity"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
+            android:theme="@style/ChatAppTheme"/>
+
+        <service android:name="com.avos.avoscloud.PushService"/>
+
+        <receiver android:name=".chatroom_module.NotificationBroadcastReceiver"/>
+
+        <receiver android:name="com.avos.avoscloud.AVBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.USER_PRESENT"/>
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="DATABASE"

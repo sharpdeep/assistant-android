@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVAnalytics;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
 import com.hanks.htextview.HTextView;
@@ -153,4 +154,15 @@ public class LessonHomePageActivity  extends AppCompatActivity{
         mWFCListener = listener;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AVAnalytics.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AVAnalytics.onPause(this);
+    }
 }

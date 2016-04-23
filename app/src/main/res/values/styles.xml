@@ -73,4 +73,44 @@
     <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/black_overlay</item>
     </style>
+
+    <!--chat room-->
+    <style name="DividerLine">
+        <item name="android:background">@color/divider_line_color</item>
+    </style>
+    <style name="DividerLine.Horizontal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_line_height</item>
+    </style>
+    <style name="TextAppearance"/>
+
+    <style name="TextAppearance.Large">
+        <item name="android:textSize">@dimen/textsize_large</item>
+    </style>
+
+    <style name="TextAppearance.Large.Gray">
+        <item name="android:textColor">@color/common_gray</item>
+    </style>
+
+    <style name="TextAppearance.Normal">
+        <item name="android:textSize">@dimen/textsize_normal</item>
+    </style>
+
+    <style name="TextAppearance.Normal.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Normal.Gray">
+        <item name="android:textColor">@color/common_gray</item>
+    </style>
+
+    <style name="TextAppearance.small"></style>
+
+    <style name="ChatAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/common_blue</item>
+        <item name="colorPrimaryDark">@color/common_blue</item>
+        <item name="colorAccent">@color/common_blue</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+    </style>
 </resources>

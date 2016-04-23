@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.ExpandableListView;
 
+import com.avos.avoscloud.AVAnalytics;
 import com.baoyz.widget.PullRefreshLayout;
 import com.mikepenz.materialdrawer.Drawer;
 import com.sharpdeep.assistant_android.R;
@@ -102,4 +103,15 @@ public class StudentSignlogActivity extends AppCompatActivity {
                 });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AVAnalytics.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AVAnalytics.onPause(this);
+    }
 }

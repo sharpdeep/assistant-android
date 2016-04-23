@@ -11,6 +11,7 @@ import android.widget.ExpandableListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVAnalytics;
 import com.baoyz.widget.PullRefreshLayout;
 import com.melnykov.fab.FloatingActionButton;
 import com.sharpdeep.assistant_android.R;
@@ -235,5 +236,17 @@ public class LessonLeavelogActivity extends AppCompatActivity {
         for (int i = 0; i < mAdapter.getGroupCount(); i++){
             mLvLeavelog.expandGroup(i);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AVAnalytics.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AVAnalytics.onPause(this);
     }
 }

@@ -1,12 +1,16 @@
 package com.sharpdeep.assistant_android.helper;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
 import com.avos.avoscloud.feedback.FeedbackAgent;
+import com.avos.avoscloud.im.v2.AVIMClient;
+import com.avos.avoscloud.im.v2.AVIMException;
+import com.avos.avoscloud.im.v2.callback.AVIMClientCallback;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -24,11 +28,16 @@ import com.sharpdeep.assistant_android.activity.StudentLeavelogActivity;
 import com.sharpdeep.assistant_android.activity.StudentSignlogActivity;
 import com.sharpdeep.assistant_android.api.AssistantClient;
 import com.sharpdeep.assistant_android.api.AssistantService;
+import com.sharpdeep.assistant_android.chatroom_module.AVImClientManager;
+import com.sharpdeep.assistant_android.chatroom_module.Constants;
+import com.sharpdeep.assistant_android.chatroom_module.activity.AVLoginActivity;
+import com.sharpdeep.assistant_android.chatroom_module.activity.AVSquareActivity;
 import com.sharpdeep.assistant_android.model.resultModel.BaseResult;
 import com.sharpdeep.assistant_android.model.resultModel.SyllabusResult;
 import com.sharpdeep.assistant_android.util.AndroidUtil;
 import com.sharpdeep.assistant_android.util.L;
 import com.sharpdeep.assistant_android.util.ProjectUtil;
+import com.sharpdeep.assistant_android.util.ToastUtil;
 
 import me.drakeet.materialdialog.MaterialDialog;
 import rx.Subscriber;
@@ -71,10 +80,28 @@ public class DrawerHelper {
                 .withSelectedIcon(R.drawable.ic_action_home_selected);
 
         PrimaryDrawerItem oaItem = new PrimaryDrawerItem()
-                .withName(R.string.oa_page)
+                .withName(R.string.chat_room)
                 .withIdentifier(IDENTIFY_OA)
                 .withIcon(R.drawable.ic_oa)
-                .withSelectedIcon(R.drawable.ic_oa_selected);
+                .withSelectedIcon(R.drawable.ic_oa_selected)
+                .withSelectable(false)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        AVImClientManager.getInstance().open(DataCacher.getInstance().getCurrentUser().getUsername(), new AVIMClientCallback() {
+                            @Override
+                            public void done(AVIMClient avimClient, AVIMException e) {
+                                if (filterException(e)) {
+                                    Intent intent = new Intent(mActivity, AVSquareActivity.class);
+                                    intent.putExtra(Constants.CONVERSATION_ID, Constants.SQUARE_CONVERSATION_ID);
+                                    intent.putExtra(Constants.ACTIVITY_TITLE, mActivity.getString(R.string.square_name));
+                                    mActivity.startActivity(intent);
+                                }
+                            }
+                        });
+                        return false;
+                    }
+                });
 
         PrimaryDrawerItem signlogItem = new PrimaryDrawerItem()
                 .withName(R.string.drawer_signlog)
@@ -190,7 +217,6 @@ public class DrawerHelper {
                             homeItem,
                             oaItem,
                             new DividerDrawerItem(),
-                            settingItem,
                             suggestionItem,
                             aboutItem,
                             new DividerDrawerItem(),
@@ -209,7 +235,6 @@ public class DrawerHelper {
                             signlogItem,
                             leavelogItem,
                             new DividerDrawerItem(),
-                            settingItem,
                             suggestionItem,
                             aboutItem,
                             new DividerDrawerItem(),
@@ -297,5 +322,15 @@ public class DrawerHelper {
                 })
                 .setCanceledOnTouchOutside(true)
                 .show();
+    }
+
+    protected boolean filterException(Exception e) {
+        if (e != null) {
+            e.printStackTrace();
+            ToastUtil.show(mActivity,e.getMessage());
+            return false;
+        } else {
+            return true;
+        }
     }
 }
